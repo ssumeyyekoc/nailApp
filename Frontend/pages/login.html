@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Giriş Yap - Nail & Lash Studio</title>
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../css/responsive.css">
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="container">
+            <div class="navbar-content">
+                <div class="logo">
+                    <h1>✨ Nail & Lash Studio</h1>
+                </div>
+                <ul class="nav-menu">
+                    <li><a href="../index.html">Ana Sayfa</a></li>
+                    <li><a href="services.html">Hizmetler</a></li>
+                    <li><a href="gallery.html">Galeri</a></li>
+                    <li><a href="appointments.html">Randevu</a></li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Auth Section -->
+    <section class="auth-section">
+        <div class="auth-container">
+            <div class="auth-form-wrapper">
+                <!-- Login Form -->
+                <div id="loginForm" class="auth-form active">
+                    <h2>Giriş Yap</h2>
+                    <form id="loginFormElement">
+                        <div class="form-group">
+                            <label for="loginEmail">E-posta</label>
+                            <input type="email" id="loginEmail" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="loginPassword">Şifre</label>
+                            <input type="password" id="loginPassword" required>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Giriş Yap</button>
+                    </form>
+                    <p>Hesabınız yok mu? <a href="#" onclick="toggleAuthForm()">Kayıt Ol</a></p>
+                </div>
+
+                <!-- Register Form -->
+                <div id="registerForm" class="auth-form">
+                    <h2>Kayıt Ol</h2>
+                    <form id="registerFormElement">
+                        <div class="form-group">
+                            <label for="registerFirstName">Adınız</label>
+                            <input type="text" id="registerFirstName" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="registerLastName">Soyadınız</label>
+                            <input type="text" id="registerLastName" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="registerEmail">E-posta</label>
+                            <input type="email" id="registerEmail" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="registerPassword">Şifre</label>
+                            <input type="password" id="registerPassword" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="registerPasswordConfirm">Şifre Tekrarı</label>
+                            <input type="password" id="registerPasswordConfirm" required>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Kayıt Ol</button>
+                    </form>
+                    <p>Zaten hesabınız var mı? <a href="#" onclick="toggleAuthForm()">Giriş Yap</a></p>
+                </div>
+
+                <!-- Message Alert -->
+                <div id="authMessage" class="auth-message"></div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <p>&copy; 2024 Nail & Lash Studio. Tüm Hakları Saklıdır.</p>
+        </div>
+    </footer>
+
+    <script src="../js/main.js"></script>
+    <script src="../js/auth.js"></script>
+</body>
+</html>

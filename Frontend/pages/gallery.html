@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Galeri - Nail & Lash Studio</title>
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../css/responsive.css">
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="container">
+            <div class="navbar-content">
+                <div class="logo">
+                    <h1>✨ Nail & Lash Studio</h1>
+                </div>
+                <ul class="nav-menu">
+                    <li><a href="../index.html">Ana Sayfa</a></li>
+                    <li><a href="services.html">Hizmetler</a></li>
+                    <li><a href="gallery.html" class="active">Galeri</a></li>
+                    <li><a href="appointments.html">Randevu</a></li>
+                    <li id="authMenu">
+                        <a href="login.html">Giriş Yap</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Gallery Section -->
+    <section class="gallery-section">
+        <div class="container">
+            <h1>Galeri</h1>
+            
+            <!-- Category Filter -->
+            <div class="filter-section">
+                <button class="filter-btn active" data-category="all">Tümü</button>
+                <button class="filter-btn" data-category="1">Jel</button>
+                <button class="filter-btn" data-category="2">Protez</button>
+                <button class="filter-btn" data-category="3">Nail Art</button>
+                <button class="filter-btn" data-category="4">Kirpik Lifting</button>
+            </div>
+
+            <!-- Gallery Grid -->
+            <div class="gallery-full-grid" id="galleryFullGrid">
+                <div class="gallery-full-item">
+                    <img src="../images/placeholder-1.jpg" alt="Galeri Görüntüsü">
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Lightbox Modal -->
+    <div id="lightbox" class="lightbox">
+        <span class="close">&times;</span>
+        <img class="lightbox-content" id="lightboxImg" src="" alt="">
+        <div class="caption" id="lightboxCaption"></div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <p>&copy; 2024 Nail & Lash Studio. Tüm Hakları Saklıdır.</p>
+        </div>
+    </footer>
+
+    <script src="../js/main.js"></script>
+    <script src="../js/gallery.js"></script>
+</body>
+</html>
