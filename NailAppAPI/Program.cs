@@ -66,14 +66,20 @@ builder.Services.AddCors(options =>
 
 var app = builder.Build();
 
+// Configure URLs for Codespaces/Container environments
+app.Urls.Add("http://0.0.0.0:5000");
+
 // Configure the HTTP request pipeline
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
 }
+else
+{
+    app.UseHttpsRedirection();
+}
 
-app.UseHttpsRedirection();
 app.UseCors("AllowAll");
 app.UseAuthentication();
 app.UseAuthorization();

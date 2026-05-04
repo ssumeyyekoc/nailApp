@@ -1,5 +1,13 @@
 // API Configuration
-const API_URL = 'http://localhost:5000/api';
+const protocol = window.location.protocol;
+let hostname = window.location.hostname;
+
+// Handle Codespaces port mapping
+if (hostname.includes('-3000.app.github.dev')) {
+    hostname = hostname.replace('-3000.app.github.dev', '-5000.app.github.dev');
+}
+
+const API_URL = `${protocol}//${hostname}/api`;
 
 // Auth State
 let currentUser = null;
