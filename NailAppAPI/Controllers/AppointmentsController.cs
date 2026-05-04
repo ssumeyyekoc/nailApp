@@ -23,7 +23,7 @@ public class AppointmentsController : ControllerBase
         if (appointment == null)
             return NotFound();
 
-        return Ok(appointment);
+        return Ok(appointment);//deneme açıklaması
     }
 
     [HttpGet("user/{userId}")]
