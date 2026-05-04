@@ -10,5 +10,4 @@ public class Category
 
     // Navigation properties
     public ICollection<Service>? Services { get; set; }
-    public ICollection<GalleryImage>? GalleryImages { get; set; }
 }

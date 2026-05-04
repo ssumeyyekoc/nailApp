@@ -52,7 +52,6 @@ nailApp/
 │   ├── index.html           # Ana Sayfa
 │   ├── pages/               # Diğer Sayfalar
 │   │   ├── services.html
-│   │   ├── gallery.html
 │   │   ├── appointments.html
 │   │   └── login.html
 │   ├── css/                 # Stil Dosyaları
@@ -116,18 +115,6 @@ nailApp/
 - Name
 - Description
 - IsActive
-- CreatedAt
-```
-
-#### GalleryImages
-```sql
-- Id (PK)
-- Title
-- Description
-- ImageUrl
-- CategoryId (FK)
-- DisplayOrder
-- IsHighlighted
 - CreatedAt
 ```
 
@@ -203,15 +190,6 @@ Frontend şu adreste açılacaktır: `http://localhost:8000`
 - `POST /api/appointments` - Randevu oluştur
 - `PUT /api/appointments/{id}/status` - Randevu durumu güncelle (Admin)
 - `DELETE /api/appointments/{id}` - Randevu sil (Admin)
-
-### Gallery
-- `GET /api/gallery` - Tüm görseller
-- `GET /api/gallery/{id}` - Görsel detayı
-- `GET /api/gallery/category/{categoryId}` - Kategoriye göre görseller
-- `GET /api/gallery/highlighted` - Öne çıkan görseller
-- `POST /api/gallery` - Yeni görsel (Admin)
-- `PUT /api/gallery/{id}` - Görsel güncelle (Admin)
-- `DELETE /api/gallery/{id}` - Görsel sil (Admin)
 
 ### Categories
 - `GET /api/categories` - Tüm kategoriler

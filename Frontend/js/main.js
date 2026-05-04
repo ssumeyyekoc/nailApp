@@ -115,22 +115,6 @@ async function getServicesByCategory(categoryId) {
     return services || [];
 }
 
-// ============ GALLERY FUNCTIONS ============
-async function loadGalleryImages() {
-    const images = await apiCall('/gallery');
-    return images || [];
-}
-
-async function getGalleryImagesByCategory(categoryId) {
-    const images = await apiCall(`/gallery/category/${categoryId}`);
-    return images || [];
-}
-
-async function getHighlightedImages() {
-    const images = await apiCall('/gallery/highlighted');
-    return images || [];
-}
-
 // ============ APPOINTMENTS FUNCTIONS ============
 async function createAppointment(appointmentData) {
     const result = await apiCall('/appointments', 'POST', appointmentData);

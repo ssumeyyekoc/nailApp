@@ -203,7 +203,6 @@
                 <li><a href="#" onclick="showTab('dashboard')" class="nav-link active">📊 Dashboard</a></li>
                 <li><a href="#" onclick="showTab('appointments')" class="nav-link">📅 Randevular</a></li>
                 <li><a href="#" onclick="showTab('services')" class="nav-link">💄 Hizmetler</a></li>
-                <li><a href="#" onclick="showTab('gallery')" class="nav-link">🖼️ Galeri</a></li>
                 <li><a href="#" onclick="showTab('categories')" class="nav-link">📂 Kategoriler</a></li>
                 <li><a href="#" onclick="logout()" class="nav-link">🚪 Çıkış Yap</a></li>
             </ul>
@@ -226,10 +225,6 @@
                     <div class="stat-card">
                         <h3>Aktif Hizmetler</h3>
                         <div class="stat-value" id="totalServices">0</div>
-                    </div>
-                    <div class="stat-card">
-                        <h3>Galeri Görselleri</h3>
-                        <div class="stat-value" id="totalImages">0</div>
                     </div>
                 </div>
             </div>
@@ -276,17 +271,6 @@
                             <!-- Services will be loaded here -->
                         </tbody>
                     </table>
-                </div>
-            </div>
-
-            <!-- Gallery Tab -->
-            <div id="gallery" class="tab-content">
-                <h1>Galeri Yönetimi</h1>
-                <div class="form-inline">
-                    <button class="btn btn-primary" onclick="showAddImageForm()">+ Yeni Görsel</button>
-                </div>
-                <div class="gallery-grid" id="galleryGrid">
-                    <!-- Gallery images will be loaded here -->
                 </div>
             </div>
 
@@ -353,20 +337,17 @@
             // Load tab data
             if (tabName === 'appointments') loadAppointments();
             else if (tabName === 'services') loadServices();
-            else if (tabName === 'gallery') loadGallery();
             else if (tabName === 'categories') loadCategories();
         }
 
         async function loadDashboardData() {
             const appointments = await apiCall('/appointments');
             const services = await apiCall('/services');
-            const images = await apiCall('/gallery');
 
             document.getElementById('totalAppointments').textContent = appointments?.length || 0;
             document.getElementById('pendingAppointments').textContent = 
                 appointments?.filter(a => a.status === 0).length || 0;
             document.getElementById('totalServices').textContent = services?.length || 0;
-            document.getElementById('totalImages').textContent = images?.length || 0;
         }
 
         async function loadAppointments() {
@@ -419,27 +400,6 @@
             }
         }
 
-        async function loadGallery() {
-            const images = await apiCall('/gallery');
-            const container = document.getElementById('galleryGrid');
-            container.innerHTML = '';
-
-            if (images) {
-                images.forEach(image => {
-                    const item = document.createElement('div');
-                    item.className = 'gallery-item';
-                    item.innerHTML = `
-                        <img src="${image.imageUrl}" alt="${image.title}">
-                        <div style="padding: 10px; background: white;">
-                            <p>${image.title}</p>
-                            <button class="delete-btn" onclick="deleteImage(${image.id})" style="width: 100%;">Sil</button>
-                        </div>
-                    `;
-                    container.appendChild(item);
-                });
-            }
-        }
-
         async function loadCategories() {
             const response = await apiCall('/categories');
             const tbody = document.getElementById('categoriesTable');
@@ -479,10 +439,6 @@
             alert('Servis ekleme formu - İmplemente edilecek');
         }
 
-        function showAddImageForm() {
-            alert('Görsel ekleme formu - İmplemente edilecek');
-        }
-
         function showAddCategoryForm() {
             alert('Kategori ekleme formu - İmplemente edilecek');
         }
@@ -495,13 +451,6 @@
             if (confirm('Bu hizmeti silmek istediğinizden emin misiniz?')) {
                 await apiCall(`/services/${id}`, 'DELETE');
                 loadServices();
-            }
-        }
-
-        async function deleteImage(id) {
-            if (confirm('Bu görseli silmek istediğinizden emin misiniz?')) {
-                await apiCall(`/gallery/${id}`, 'DELETE');
-                loadGallery();
             }
         }
 

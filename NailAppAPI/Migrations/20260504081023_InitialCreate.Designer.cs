@@ -212,40 +212,6 @@ namespace NailAppAPI.Migrations
                         });
                 });
 
-            modelBuilder.Entity("NailAppAPI.Models.GalleryImage", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("INTEGER");
-
-                    b.Property<int>("CategoryId")
-                        .HasColumnType("INTEGER");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("Description")
-                        .HasColumnType("TEXT");
-
-                    b.Property<int>("DisplayOrder")
-                        .HasColumnType("INTEGER");
-
-                    b.Property<string>("ImageUrl")
-                        .HasColumnType("TEXT");
-
-                    b.Property<bool>("IsHighlighted")
-                        .HasColumnType("INTEGER");
-
-                    b.Property<string>("Title")
-                        .HasColumnType("TEXT");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("CategoryId");
-
-                    b.ToTable("GalleryImages");
-                });
-
             modelBuilder.Entity("NailAppAPI.Models.Role", b =>
                 {
                     b.Property<int>("Id")
@@ -489,17 +455,6 @@ namespace NailAppAPI.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("NailAppAPI.Models.GalleryImage", b =>
-                {
-                    b.HasOne("NailAppAPI.Models.Category", "Category")
-                        .WithMany("GalleryImages")
-                        .HasForeignKey("CategoryId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Category");
-                });
-
             modelBuilder.Entity("NailAppAPI.Models.Service", b =>
                 {
                     b.HasOne("NailAppAPI.Models.Category", "Category")
@@ -513,8 +468,6 @@ namespace NailAppAPI.Migrations
 
             modelBuilder.Entity("NailAppAPI.Models.Category", b =>
                 {
-                    b.Navigation("GalleryImages");
-
                     b.Navigation("Services");
                 });
 

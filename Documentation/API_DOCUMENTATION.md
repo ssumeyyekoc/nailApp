@@ -230,33 +230,6 @@ Authorization: Bearer {token}
 
 ---
 
-## Gallery Endpoints
-
-### 1. Tüm Görselleri Getir
-**Endpoint:** `GET /gallery`
-
-### 2. Öne Çıkan Görselleri Getir
-**Endpoint:** `GET /gallery/highlighted`
-
-### 3. Kategoriye Göre Görseller
-**Endpoint:** `GET /gallery/category/{categoryId}`
-
-### 4. Görsel Yükle
-**Endpoint:** `POST /gallery`
-**Kimlik Doğrulama:** ✅ Admin
-
-**Request:**
-```json
-{
-  "title": "Güzel Tasarım",
-  "description": "Kırmızı ve gümüş renkli nail art",
-  "imageUrl": "https://example.com/image.jpg",
-  "categoryId": 3
-}
-```
-
----
-
 ## Categories Endpoints
 
 ### 1. Tüm Kategoriler

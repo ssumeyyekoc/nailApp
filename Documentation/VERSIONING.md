@@ -15,7 +15,6 @@ Bu proje Semantic Versioning (SemVer) kullanır: MAJOR.MINOR.PATCH
 #### Features
 - ✅ Temel randevu sistemi
 - ✅ Hizmet yönetimi
-- ✅ Galeri özelliği
 - ✅ Kategori yönetimi
 - ✅ Kullanıcı authentication (JWT)
 - ✅ Responsive web design
@@ -26,7 +25,6 @@ Bu proje Semantic Versioning (SemVer) kullanır: MAJOR.MINOR.PATCH
 - Authentication (login, register, profile)
 - Services (CRUD)
 - Appointments (CRUD, available times)
-- Gallery (CRUD, filtering)
 - Categories (CRUD)
 
 #### Known Limitations

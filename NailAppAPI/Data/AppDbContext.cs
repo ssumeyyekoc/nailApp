@@ -15,7 +15,6 @@ public class AppDbContext : IdentityDbContext<User, Role, int>
     public DbSet<Service> Services { get; set; } = null!;
     public DbSet<Category> Categories { get; set; } = null!;
     public DbSet<Appointment> Appointments { get; set; } = null!;
-    public DbSet<GalleryImage> GalleryImages { get; set; } = null!;
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -46,15 +45,6 @@ public class AppDbContext : IdentityDbContext<User, Role, int>
             .HasOne(a => a.Service)
             .WithMany(s => s.Appointments)
             .HasForeignKey(a => a.ServiceId)
-            .OnDelete(DeleteBehavior.Cascade);
-
-        // GalleryImage configuration
-        modelBuilder.Entity<GalleryImage>()
-            .HasKey(g => g.Id);
-        modelBuilder.Entity<GalleryImage>()
-            .HasOne(g => g.Category)
-            .WithMany(c => c.GalleryImages)
-            .HasForeignKey(g => g.CategoryId)
             .OnDelete(DeleteBehavior.Cascade);
 
         // Seed default roles

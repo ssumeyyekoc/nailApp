@@ -183,31 +183,6 @@ namespace NailAppAPI.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "GalleryImages",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "INTEGER", nullable: false)
-                        .Annotation("Sqlite:Autoincrement", true),
-                    Title = table.Column<string>(type: "TEXT", nullable: true),
-                    Description = table.Column<string>(type: "TEXT", nullable: true),
-                    ImageUrl = table.Column<string>(type: "TEXT", nullable: true),
-                    CategoryId = table.Column<int>(type: "INTEGER", nullable: false),
-                    DisplayOrder = table.Column<int>(type: "INTEGER", nullable: false),
-                    IsHighlighted = table.Column<bool>(type: "INTEGER", nullable: false),
-                    CreatedAt = table.Column<DateTime>(type: "TEXT", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_GalleryImages", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_GalleryImages_Categories_CategoryId",
-                        column: x => x.CategoryId,
-                        principalTable: "Categories",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "Services",
                 columns: table => new
                 {
@@ -333,11 +308,6 @@ namespace NailAppAPI.Migrations
                 unique: true);
 
             migrationBuilder.CreateIndex(
-                name: "IX_GalleryImages_CategoryId",
-                table: "GalleryImages",
-                column: "CategoryId");
-
-            migrationBuilder.CreateIndex(
                 name: "IX_Services_CategoryId",
                 table: "Services",
                 column: "CategoryId");
@@ -363,9 +333,6 @@ namespace NailAppAPI.Migrations
 
             migrationBuilder.DropTable(
                 name: "AspNetUserTokens");
-
-            migrationBuilder.DropTable(
-                name: "GalleryImages");
 
             migrationBuilder.DropTable(
                 name: "Services");
