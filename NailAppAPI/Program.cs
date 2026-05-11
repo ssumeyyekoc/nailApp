@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.FileProviders;
 using Microsoft.IdentityModel.Tokens;
 using NailAppAPI.Data;
 using NailAppAPI.Models;
@@ -69,13 +70,26 @@ var app = builder.Build();
 // Configure URLs for Codespaces/Container environments
 app.Urls.Add("http://0.0.0.0:5000");
 
-// Configure the HTTP request pipeline
-if (app.Environment.IsDevelopment())
+var frontendPath = Path.Combine(builder.Environment.ContentRootPath, "..", "Frontend");
+var frontendProvider = new PhysicalFileProvider(frontendPath);
+
+app.UseDefaultFiles(new DefaultFilesOptions
 {
-    app.UseSwagger();
-    app.UseSwaggerUI();
-}
-else
+    FileProvider = frontendProvider,
+    RequestPath = string.Empty
+});
+
+app.UseStaticFiles(new StaticFileOptions
+{
+    FileProvider = frontendProvider,
+    RequestPath = string.Empty
+});
+
+// Configure the HTTP request pipeline
+app.UseSwagger();
+app.UseSwaggerUI();
+
+if (!app.Environment.IsDevelopment())
 {
     app.UseHttpsRedirection();
 }
