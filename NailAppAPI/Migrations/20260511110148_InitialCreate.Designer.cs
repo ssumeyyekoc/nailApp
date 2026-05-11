@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using NailAppAPI.Data;
 
@@ -11,9 +12,11 @@ using NailAppAPI.Data;
 namespace NailAppAPI.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260511110148_InitialCreate")]
+    partial class InitialCreate
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -192,7 +195,7 @@ namespace NailAppAPI.Migrations
                         new
                         {
                             Id = 1,
-                            CreatedAt = new DateTime(2026, 5, 11, 14, 2, 54, 309, DateTimeKind.Local).AddTicks(8481),
+                            CreatedAt = new DateTime(2026, 5, 11, 14, 1, 47, 749, DateTimeKind.Local).AddTicks(371),
                             Description = "Jel tırnak hizmetleri",
                             IsActive = true,
                             Name = "Jel"
@@ -200,7 +203,7 @@ namespace NailAppAPI.Migrations
                         new
                         {
                             Id = 2,
-                            CreatedAt = new DateTime(2026, 5, 11, 14, 2, 54, 309, DateTimeKind.Local).AddTicks(8485),
+                            CreatedAt = new DateTime(2026, 5, 11, 14, 1, 47, 749, DateTimeKind.Local).AddTicks(374),
                             Description = "Protez tırnak hizmetleri",
                             IsActive = true,
                             Name = "Protez"
@@ -208,7 +211,7 @@ namespace NailAppAPI.Migrations
                         new
                         {
                             Id = 3,
-                            CreatedAt = new DateTime(2026, 5, 11, 14, 2, 54, 309, DateTimeKind.Local).AddTicks(8486),
+                            CreatedAt = new DateTime(2026, 5, 11, 14, 1, 47, 749, DateTimeKind.Local).AddTicks(376),
                             Description = "Nail Art tasarımları",
                             IsActive = true,
                             Name = "Nail Art"
@@ -216,7 +219,7 @@ namespace NailAppAPI.Migrations
                         new
                         {
                             Id = 4,
-                            CreatedAt = new DateTime(2026, 5, 11, 14, 2, 54, 309, DateTimeKind.Local).AddTicks(8487),
+                            CreatedAt = new DateTime(2026, 5, 11, 14, 1, 47, 749, DateTimeKind.Local).AddTicks(378),
                             Description = "Kirpik lifting hizmetleri",
                             IsActive = true,
                             Name = "Kirpik Lifting"
@@ -262,7 +265,7 @@ namespace NailAppAPI.Migrations
                         new
                         {
                             Id = 1,
-                            CreatedAt = new DateTime(2026, 5, 11, 14, 2, 54, 309, DateTimeKind.Local).AddTicks(8269),
+                            CreatedAt = new DateTime(2026, 5, 11, 14, 1, 47, 749, DateTimeKind.Local).AddTicks(108),
                             Description = "Administrator",
                             Name = "Admin",
                             NormalizedName = "ADMİN"
@@ -270,7 +273,7 @@ namespace NailAppAPI.Migrations
                         new
                         {
                             Id = 2,
-                            CreatedAt = new DateTime(2026, 5, 11, 14, 2, 54, 309, DateTimeKind.Local).AddTicks(8320),
+                            CreatedAt = new DateTime(2026, 5, 11, 14, 1, 47, 749, DateTimeKind.Local).AddTicks(183),
                             Description = "Registered Customer",
                             Name = "Customer",
                             NormalizedName = "CUSTOMER"
@@ -278,7 +281,7 @@ namespace NailAppAPI.Migrations
                         new
                         {
                             Id = 3,
-                            CreatedAt = new DateTime(2026, 5, 11, 14, 2, 54, 309, DateTimeKind.Local).AddTicks(8326),
+                            CreatedAt = new DateTime(2026, 5, 11, 14, 1, 47, 749, DateTimeKind.Local).AddTicks(191),
                             Description = "Guest User",
                             Name = "Guest",
                             NormalizedName = "GUEST"

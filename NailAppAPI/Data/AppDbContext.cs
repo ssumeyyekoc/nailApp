@@ -19,6 +19,12 @@ public class AppDbContext : IdentityDbContext<User, Role, int>
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
+        modelBuilder.Entity<Appointment>()
+        .Property(a => a.Status)
+        .HasConversion<string>();
+    
+
+        
 
         // Category configuration
         modelBuilder.Entity<Category>()
@@ -27,6 +33,9 @@ public class AppDbContext : IdentityDbContext<User, Role, int>
         // Service configuration
         modelBuilder.Entity<Service>()
             .HasKey(s => s.Id);
+        modelBuilder.Entity<Service>()
+            .Property(s => s.Price)
+            .HasColumnType("decimal(18,2)");
         modelBuilder.Entity<Service>()
             .HasOne(s => s.Category)
             .WithMany(c => c.Services)
