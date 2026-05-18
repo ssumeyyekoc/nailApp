@@ -17,6 +17,19 @@ public class AppDbContext : IdentityDbContext<User, Role, int>
     public DbSet<Appointment> Appointments { get; set; } = null!;
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
+{
+    base.OnModelCreating(modelBuilder);
+
+    // Sunum için Seed Data (Örnek Veriler)
+    // "Service" yazan yeri kendi Entity adınla değiştir.
+    modelBuilder.Entity<Service>().HasData(
+        new Service { Id = 1, Name = "Kalıcı Oje", Price = 400 },
+        new Service { Id = 2, Name = "Protez Tırnak", Price = 800 },
+        new Service { Id = 3, Name = "Manikür", Price = 300 }
+    );
+}
+
+    protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
 
