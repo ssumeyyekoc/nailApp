@@ -1,14 +1,12 @@
-using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using NailAppAPI.Models;
 
 namespace NailAppAPI.Data;
 
 public class AppDbContext : IdentityDbContext<User, Role, int>
 {
-    public AppDbContext(DbContextOptions<AppDbContext> options) 
-        : base(options)
+    public AppDbContext(DbContextOptions<AppDbContext> options) : base(options)
     {
     }
 
@@ -17,86 +15,35 @@ public class AppDbContext : IdentityDbContext<User, Role, int>
     public DbSet<Appointment> Appointments { get; set; } = null!;
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
-{
-    base.OnModelCreating(modelBuilder);
-
-    // Sunum için Seed Data (Örnek Veriler)
-    // "Service" yazan yeri kendi Entity adınla değiştir.
-    modelBuilder.Entity<Service>().HasData(
-        new Service { Id = 1, Name = "Kalıcı Oje", Price = 400 },
-        new Service { Id = 2, Name = "Protez Tırnak", Price = 800 },
-        new Service { Id = 3, Name = "Manikür", Price = 300 }
-    );
-}
-
-    protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
 
-        // Category configuration
-        modelBuilder.Entity<Category>()
-            .HasKey(c => c.Id);
+        // 1. ÖNCE ÖRNEK BİR KATEGORİ OLUŞTURUYORUZ (Foreign Key Hatasını Çözmek İçin)
+        modelBuilder.Entity<Category>().HasData(
+            new Category { Id = 1, Name = "Tırnak Bakımı" }
+        );
 
-        // Service configuration
-        modelBuilder.Entity<Service>()
-            .HasKey(s => s.Id);
+        // 2. HİZMETLERİ BU KATEGORİYE BAĞLIYORUZ (CategoryId = 1 yaptık)
+        modelBuilder.Entity<Service>().HasData(
+            new Service { Id = 1, Name = "Kalıcı Oje", Price = 400, CategoryId = 1 },
+            new Service { Id = 2, Name = "Protez Tırnak", Price = 800, CategoryId = 1 },
+            new Service { Id = 3, Name = "Manikür", Price = 300, CategoryId = 1 }
+        );
+
+        // 3. Service İlişkileri
+        modelBuilder.Entity<Service>().HasKey(s => s.Id);
+        
         modelBuilder.Entity<Service>()
             .HasOne(s => s.Category)
             .WithMany(c => c.Services)
             .HasForeignKey(s => s.CategoryId)
             .OnDelete(DeleteBehavior.Cascade);
 
-        // Appointment configuration
-        modelBuilder.Entity<Appointment>()
-            .HasKey(a => a.Id);
+        // 4. Appointment İlişkileri
+        modelBuilder.Entity<Appointment>().HasKey(a => a.Id);
+        
         modelBuilder.Entity<Appointment>()
             .HasOne(a => a.User)
-            .WithMany(u => u.Appointments)
-            .HasForeignKey(a => a.UserId)
-            .OnDelete(DeleteBehavior.Cascade);
-        modelBuilder.Entity<Appointment>()
-            .HasOne(a => a.Service)
-            .WithMany(s => s.Appointments)
-            .HasForeignKey(a => a.ServiceId)
-            .OnDelete(DeleteBehavior.Cascade);
-
-        // Seed default roles
-        var roles = new[]
-        {
-            new Role 
-            { 
-                Id = 1, 
-                Name = Role.Admin, 
-                NormalizedName = Role.Admin.ToUpper(),
-                Description = "Administrator"
-            },
-            new Role 
-            { 
-                Id = 2, 
-                Name = Role.Customer, 
-                NormalizedName = Role.Customer.ToUpper(),
-                Description = "Registered Customer"
-            },
-            new Role 
-            { 
-                Id = 3, 
-                Name = Role.Guest, 
-                NormalizedName = Role.Guest.ToUpper(),
-                Description = "Guest User"
-            }
-        };
-
-        modelBuilder.Entity<Role>().HasData(roles);
-
-        // Seed default categories
-        var categories = new[]
-        {
-            new Category { Id = 1, Name = "Jel", Description = "Jel tırnak hizmetleri", IsActive = true },
-            new Category { Id = 2, Name = "Protez", Description = "Protez tırnak hizmetleri", IsActive = true },
-            new Category { Id = 3, Name = "Nail Art", Description = "Nail Art tasarımları", IsActive = true },
-            new Category { Id = 4, Name = "Kirpik Lifting", Description = "Kirpik lifting hizmetleri", IsActive = true }
-        };
-
-        modelBuilder.Entity<Category>().HasData(categories);
+            .WithMany(u => u.Appointments);
     }
 }
