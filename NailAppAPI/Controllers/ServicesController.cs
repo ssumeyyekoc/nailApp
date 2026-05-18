@@ -2,6 +2,10 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using NailAppAPI.Services;
 
+using System.ComponentModel.DataAnnotations; // Bu satırı dosyanın en üstündeki using'lerin arasına da eklemeyi unutma!
+
+
+
 namespace NailAppAPI.Controllers;
 
 [ApiController]
@@ -87,19 +91,40 @@ public class ServicesController : ControllerBase
     }
 }
 
+
 public class CreateServiceRequest
 {
-    public string? Name { get; set; }
+    [Required(ErrorMessage = "Hizmet adı boş bırakılamaz.")]
+    [MaxLength(100, ErrorMessage = "Hizmet adı en fazla 100 karakter olabilir.")]
+    public string Name { get; set; } = string.Empty;
+
     public string? Description { get; set; }
+
+    [Required(ErrorMessage = "Fiyat bilgisi zorunludur.")]
+    [Range(0.1, 10000, ErrorMessage = "Geçerli bir fiyat giriniz (0'dan büyük olmalı).")]
     public decimal Price { get; set; }
+
+    [Required(ErrorMessage = "Süre bilgisi zorunludur.")]
+    [Range(1, 300, ErrorMessage = "Hizmet süresi 1 ile 300 dakika arasında olmalıdır.")]
     public int DurationMinutes { get; set; }
+
+    [Required(ErrorMessage = "Kategori seçimi zorunludur.")]
     public int CategoryId { get; set; }
 }
 
 public class UpdateServiceRequest
 {
-    public string? Name { get; set; }
+    [Required(ErrorMessage = "Hizmet adı boş bırakılamaz.")]
+    [MaxLength(100, ErrorMessage = "Hizmet adı en fazla 100 karakter olabilir.")]
+    public string Name { get; set; } = string.Empty;
+
     public string? Description { get; set; }
+
+    [Required(ErrorMessage = "Fiyat bilgisi zorunludur.")]
+    [Range(0.1, 10000, ErrorMessage = "Geçerli bir fiyat giriniz.")]
     public decimal Price { get; set; }
+
+    [Required(ErrorMessage = "Süre bilgisi zorunludur.")]
+    [Range(1, 300, ErrorMessage = "Hizmet süresi 1 ile 300 dakika arasında olmalıdır.")]
     public int DurationMinutes { get; set; }
 }
