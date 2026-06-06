@@ -43,12 +43,12 @@ public class AppDbContext : IdentityDbContext<User, Role, int>
 
         // 3. Hizmetleri Seed'le
         modelBuilder.Entity<Service>().HasData(
-            new Service { Id = 1, Name = "Kalıcı Oje", Description = "Uzun ömürlü kalıcı oje uygulaması", Price = 400, DurationMinutes = 45, CategoryId = 5 },
-            new Service { Id = 2, Name = "Protez Tırnak", Description = "Doğal görünümlü protez tırnak tasarımı", Price = 800, DurationMinutes = 90, CategoryId = 2 },
-            new Service { Id = 3, Name = "Manikür", Description = "Klasik manikür bakımı", Price = 300, DurationMinutes = 30, CategoryId = 5 },
-            new Service { Id = 4, Name = "Jel Tırnak Uygulaması", Description = "Yüksek kaliteli jel malzemeleri ile uzun ömürlü uygulama", Price = 500, DurationMinutes = 60, CategoryId = 1 },
-            new Service { Id = 5, Name = "Nail Art Tasarım", Description = "Özel nail art tasarımları ve süsleme", Price = 600, DurationMinutes = 75, CategoryId = 3 },
-            new Service { Id = 6, Name = "Kirpik Lifting", Description = "Kirpiklerinizi kıvırma ve hacimlendirme", Price = 350, DurationMinutes = 45, CategoryId = 4 }
+            new Service { Id = 1, Name = "Kalıcı Oje", Description = "Uzun ömürlü kalıcı oje uygulaması", Price = 400, DurationMinutes = 45, CategoryIds = "5" },
+            new Service { Id = 2, Name = "Protez Tırnak", Description = "Doğal görünümlü protez tırnak tasarımı", Price = 800, DurationMinutes = 90, CategoryIds = "2" },
+            new Service { Id = 3, Name = "Manikür", Description = "Klasik manikür bakımı", Price = 300, DurationMinutes = 30, CategoryIds = "5" },
+            new Service { Id = 4, Name = "Jel Tırnak Uygulaması", Description = "Yüksek kaliteli jel malzemeleri ile uzun ömürlü uygulama", Price = 500, DurationMinutes = 60, CategoryIds = "1" },
+            new Service { Id = 5, Name = "Nail Art Tasarım", Description = "Özel nail art tasarımları ve süsleme", Price = 600, DurationMinutes = 75, CategoryIds = "3" },
+            new Service { Id = 6, Name = "Kirpik Lifting", Description = "Kirpiklerinizi kıvırma ve hacimlendirme", Price = 350, DurationMinutes = 45, CategoryIds = "4" }
         );
 
         // 4. Service İlişkileri
@@ -57,11 +57,6 @@ public class AppDbContext : IdentityDbContext<User, Role, int>
         modelBuilder.Entity<Service>()
             .Property(s => s.Price)
             .HasColumnType("decimal(18,2)");
-        modelBuilder.Entity<Service>()
-            .HasOne(s => s.Category)
-            .WithMany(c => c.Services)
-            .HasForeignKey(s => s.CategoryId)
-            .OnDelete(DeleteBehavior.Cascade);
 
         // 5. Appointment İlişkileri
         modelBuilder.Entity<Appointment>().HasKey(a => a.Id);
@@ -78,10 +73,5 @@ public class AppDbContext : IdentityDbContext<User, Role, int>
 
         // 6. Gallery İlişkileri
         modelBuilder.Entity<Models.Gallery>().HasKey(g => g.Id);
-        
-        modelBuilder.Entity<Models.Gallery>()
-            .HasOne(g => g.Category)
-            .WithMany()
-            .HasForeignKey(g => g.CategoryId);
     }
 }

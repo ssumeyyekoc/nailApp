@@ -455,10 +455,10 @@
                     <input type="number" id="serviceDuration" required min="1" max="300">
                 </div>
                 <div class="form-group">
-                    <label for="serviceCategory">Kategori *</label>
-                    <select id="serviceCategory" required>
-                        <option value="">-- Kategori Seçin --</option>
-                    </select>
+                    <label>Kategoriler * (Birden fazla seçebilirsiniz)</label>
+                    <div id="serviceCategoriesContainer" style="display: flex; flex-direction: column; gap: 8px; max-height: 150px; overflow-y: auto; border: 1px solid #ddd; padding: 10px; border-radius: var(--border-radius); background: white;">
+                        <!-- Checkbox'lar JavaScript ile dinamik olarak doldurulacak -->
+                    </div>
                 </div>
                 <div class="modal-actions">
                     <button type="button" class="btn-cancel" onclick="closeModal('serviceModal')">İptal</button>
@@ -525,10 +525,10 @@
                     <input type="text" id="galleryDescription">
                 </div>
                 <div class="form-group">
-                    <label for="galleryCategory">Kategori *</label>
-                    <select id="galleryCategory" required>
-                        <option value="">-- Kategori Seçin --</option>
-                    </select>
+                    <label>Kategoriler * (Birden fazla seçebilirsiniz)</label>
+                    <div id="galleryCategoriesContainer" style="display: flex; flex-direction: column; gap: 8px; max-height: 150px; overflow-y: auto; border: 1px solid #ddd; padding: 10px; border-radius: var(--border-radius); background: white;">
+                        <!-- Checkbox'lar JavaScript ile dinamik olarak doldurulacak -->
+                    </div>
                 </div>
                 <div class="modal-actions">
                     <button type="button" class="btn-cancel" onclick="closeModal('galleryUploadModal')">İptal</button>
@@ -667,20 +667,32 @@
             }
         }
 
+        // Kategori ID'lerini isimlere dönüştüren yardımcı fonksiyon
+        function getCategoryNames(categoryIds, allCategories) {
+            if (!categoryIds || !allCategories) return '';
+            const ids = categoryIds.split(',');
+            return allCategories
+                .filter(cat => ids.includes(cat.id.toString()))
+                .map(cat => cat.name)
+                .join(', ');
+        }
+
         // ============ SERVICES CRUD ============
         async function loadAdminServices() {
             const services = await apiCall('/services');
+            const categories = await apiCall('/categories');
             const tbody = document.getElementById('servicesTable');
             tbody.innerHTML = '';
 
             if (services && Array.isArray(services)) {
                 services.forEach(service => {
                     const row = document.createElement('tr');
+                    const categoryNames = getCategoryNames(service.categoryIds, categories);
                     row.innerHTML = `
                         <td>${service.name}</td>
                         <td>₺${service.price}</td>
                         <td>${service.durationMinutes} dk</td>
-                        <td>${service.category?.name || ''}</td>
+                        <td>${categoryNames}</td>
                         <td>
                             <div class="action-btns">
                                 <button class="edit-btn" onclick="editService(${service.id})">✎ Düzenle</button>
@@ -696,11 +708,17 @@
         async function showServiceModal(serviceId = null) {
             // Kategorileri yükle
             const categories = await apiCall('/categories');
-            const categorySelect = document.getElementById('serviceCategory');
-            categorySelect.innerHTML = '<option value="">-- Kategori Seçin --</option>';
+            const container = document.getElementById('serviceCategoriesContainer');
+            container.innerHTML = '';
+            
             if (categories && Array.isArray(categories)) {
                 categories.forEach(cat => {
-                    categorySelect.innerHTML += `<option value="${cat.id}">${cat.name}</option>`;
+                    container.innerHTML += `
+                        <label style="display: flex; align-items: center; gap: 8px; font-weight: normal; cursor: pointer;">
+                            <input type="checkbox" name="serviceCategoryCheck" value="${cat.id}" style="width: auto;">
+                            ${cat.name}
+                        </label>
+                    `;
                 });
             }
 
@@ -713,7 +731,17 @@
                     document.getElementById('serviceDescription').value = service.description || '';
                     document.getElementById('servicePrice').value = service.price;
                     document.getElementById('serviceDuration').value = service.durationMinutes;
-                    document.getElementById('serviceCategory').value = service.categoryId;
+                    
+                    // Kayıtlı kategorileri işaretle
+                    if (service.categoryIds) {
+                        const ids = service.categoryIds.split(',');
+                        document.querySelectorAll('input[name="serviceCategoryCheck"]').forEach(cb => {
+                            if (ids.includes(cb.value)) {
+                                cb.checked = true;
+                            }
+                        });
+                    }
+                    
                     document.getElementById('serviceModalTitle').textContent = 'Hizmet Düzenle';
                 }
             } else {
@@ -732,13 +760,22 @@
         document.getElementById('serviceForm').addEventListener('submit', async function(e) {
             e.preventDefault();
             
+            // Seçili checkbox'ların ID'lerini topla
+            const checkedBoxes = document.querySelectorAll('input[name="serviceCategoryCheck"]:checked');
+            const categoryIds = Array.from(checkedBoxes).map(cb => cb.value).join(',');
+
+            if (!categoryIds) {
+                alert('Lütfen en az bir kategori seçin.');
+                return;
+            }
+
             const serviceId = document.getElementById('serviceId').value;
             const data = {
                 name: document.getElementById('serviceName').value,
                 description: document.getElementById('serviceDescription').value,
                 price: parseFloat(document.getElementById('servicePrice').value),
                 durationMinutes: parseInt(document.getElementById('serviceDuration').value),
-                categoryId: parseInt(document.getElementById('serviceCategory').value)
+                categoryIds: categoryIds
             };
 
             let result;
@@ -863,11 +900,17 @@
         async function showGalleryUploadModal() {
             // Kategorileri yükle
             const categories = await apiCall('/categories');
-            const categorySelect = document.getElementById('galleryCategory');
-            categorySelect.innerHTML = '<option value="">-- Kategori Seçin --</option>';
+            const container = document.getElementById('galleryCategoriesContainer');
+            container.innerHTML = '';
+            
             if (categories && Array.isArray(categories)) {
                 categories.forEach(cat => {
-                    categorySelect.innerHTML += `<option value="${cat.id}">${cat.name}</option>`;
+                    container.innerHTML += `
+                        <label style="display: flex; align-items: center; gap: 8px; font-weight: normal; cursor: pointer;">
+                            <input type="checkbox" name="galleryCategoryCheck" value="${cat.id}" style="width: auto;">
+                            ${cat.name}
+                        </label>
+                    `;
                 });
             }
             
@@ -883,11 +926,17 @@
 
         async function editGalleryItem(id) {
             const categories = await apiCall('/categories');
-            const categorySelect = document.getElementById('galleryCategory');
-            categorySelect.innerHTML = '<option value="">-- Kategori Seçin --</option>';
+            const container = document.getElementById('galleryCategoriesContainer');
+            container.innerHTML = '';
+            
             if (categories && Array.isArray(categories)) {
                 categories.forEach(cat => {
-                    categorySelect.innerHTML += `<option value="${cat.id}">${cat.name}</option>`;
+                    container.innerHTML += `
+                        <label style="display: flex; align-items: center; gap: 8px; font-weight: normal; cursor: pointer;">
+                            <input type="checkbox" name="galleryCategoryCheck" value="${cat.id}" style="width: auto;">
+                            ${cat.name}
+                        </label>
+                    `;
                 });
             }
 
@@ -895,7 +944,16 @@
             if (item) {
                 document.getElementById('editGalleryId').value = item.id;
                 document.getElementById('galleryDescription').value = item.description || '';
-                document.getElementById('galleryCategory').value = item.categoryId;
+                
+                // Kayıtlı kategorileri işaretle
+                if (item.categoryIds) {
+                    const ids = item.categoryIds.split(',');
+                    document.querySelectorAll('input[name="galleryCategoryCheck"]').forEach(cb => {
+                        if (ids.includes(cb.value)) {
+                            cb.checked = true;
+                        }
+                    });
+                }
                 
                 document.getElementById('galleryModalTitle').textContent = 'Resim Düzenle';
                 document.getElementById('gallerySubmitBtn').textContent = 'Kaydet';
@@ -1028,6 +1086,15 @@
                 return;
             }
 
+            // Seçili checkbox'ların ID'lerini topla
+            const checkedBoxes = document.querySelectorAll('input[name="galleryCategoryCheck"]:checked');
+            const categoryIds = Array.from(checkedBoxes).map(cb => cb.value).join(',');
+
+            if (!categoryIds) {
+                alert('Lütfen en az bir kategori seçin.');
+                return;
+            }
+
             const targetWidth = parseInt(document.getElementById('galleryResizeWidth').value);
             const targetHeight = parseInt(document.getElementById('galleryResizeHeight').value);
 
@@ -1045,7 +1112,7 @@
                 formData.append('image', imageFile);
             }
             formData.append('description', document.getElementById('galleryDescription').value);
-            formData.append('categoryId', document.getElementById('galleryCategory').value);
+            formData.append('categoryIds', categoryIds);
 
             try {
                 const url = editId ? `${API_URL}/gallery/${editId}` : `${API_URL}/gallery`;

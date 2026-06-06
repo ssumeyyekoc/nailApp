@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace NailAppAPI.Migrations
 {
     /// <inheritdoc />
-    public partial class InitialCreate : Migration
+    public partial class InitialCreateMultiCategory : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -74,6 +74,22 @@ namespace NailAppAPI.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Categories", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Galleries",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "INTEGER", nullable: false)
+                        .Annotation("Sqlite:Autoincrement", true),
+                    ImageUrl = table.Column<string>(type: "TEXT", nullable: false),
+                    Description = table.Column<string>(type: "TEXT", nullable: true),
+                    CategoryIds = table.Column<string>(type: "TEXT", nullable: false),
+                    CreatedAt = table.Column<DateTime>(type: "TEXT", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Galleries", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -183,28 +199,6 @@ namespace NailAppAPI.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Galleries",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "INTEGER", nullable: false)
-                        .Annotation("Sqlite:Autoincrement", true),
-                    ImageUrl = table.Column<string>(type: "TEXT", nullable: false),
-                    Description = table.Column<string>(type: "TEXT", nullable: true),
-                    CategoryId = table.Column<int>(type: "INTEGER", nullable: false),
-                    CreatedAt = table.Column<DateTime>(type: "TEXT", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Galleries", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_Galleries_Categories_CategoryId",
-                        column: x => x.CategoryId,
-                        principalTable: "Categories",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "Services",
                 columns: table => new
                 {
@@ -214,10 +208,11 @@ namespace NailAppAPI.Migrations
                     Description = table.Column<string>(type: "TEXT", nullable: true),
                     Price = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
                     DurationMinutes = table.Column<int>(type: "INTEGER", nullable: false),
-                    CategoryId = table.Column<int>(type: "INTEGER", nullable: false),
+                    CategoryIds = table.Column<string>(type: "TEXT", nullable: false),
                     IsActive = table.Column<bool>(type: "INTEGER", nullable: false),
                     CreatedAt = table.Column<DateTime>(type: "TEXT", nullable: false),
-                    UpdatedAt = table.Column<DateTime>(type: "TEXT", nullable: true)
+                    UpdatedAt = table.Column<DateTime>(type: "TEXT", nullable: true),
+                    CategoryId = table.Column<int>(type: "INTEGER", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -226,8 +221,7 @@ namespace NailAppAPI.Migrations
                         name: "FK_Services_Categories_CategoryId",
                         column: x => x.CategoryId,
                         principalTable: "Categories",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        principalColumn: "Id");
                 });
 
             migrationBuilder.CreateTable(
@@ -266,8 +260,8 @@ namespace NailAppAPI.Migrations
                 columns: new[] { "Id", "ConcurrencyStamp", "CreatedAt", "Description", "Name", "NormalizedName" },
                 values: new object[,]
                 {
-                    { 1, "admin-stamp", new DateTime(2026, 6, 6, 14, 54, 34, 915, DateTimeKind.Local).AddTicks(8410), "Sistem yöneticisi", "Admin", "ADMIN" },
-                    { 2, "customer-stamp", new DateTime(2026, 6, 6, 14, 54, 34, 915, DateTimeKind.Local).AddTicks(8450), "Kayıtlı müşteri", "Customer", "CUSTOMER" }
+                    { 1, "admin-stamp", new DateTime(2026, 6, 6, 15, 42, 35, 381, DateTimeKind.Local).AddTicks(5550), "Sistem yöneticisi", "Admin", "ADMIN" },
+                    { 2, "customer-stamp", new DateTime(2026, 6, 6, 15, 42, 35, 381, DateTimeKind.Local).AddTicks(5590), "Kayıtlı müşteri", "Customer", "CUSTOMER" }
                 });
 
             migrationBuilder.InsertData(
@@ -275,24 +269,24 @@ namespace NailAppAPI.Migrations
                 columns: new[] { "Id", "CreatedAt", "Description", "IsActive", "Name" },
                 values: new object[,]
                 {
-                    { 1, new DateTime(2026, 6, 6, 14, 54, 34, 915, DateTimeKind.Local).AddTicks(8510), "Jel tırnak hizmetleri", true, "Jel Tırnak" },
-                    { 2, new DateTime(2026, 6, 6, 14, 54, 34, 915, DateTimeKind.Local).AddTicks(8510), "Protez tırnak hizmetleri", true, "Protez Tırnak" },
-                    { 3, new DateTime(2026, 6, 6, 14, 54, 34, 915, DateTimeKind.Local).AddTicks(8520), "Nail art tasarımları", true, "Nail Art" },
-                    { 4, new DateTime(2026, 6, 6, 14, 54, 34, 915, DateTimeKind.Local).AddTicks(8520), "Kirpik lifting hizmetleri", true, "Kirpik Lifting" },
-                    { 5, new DateTime(2026, 6, 6, 14, 54, 34, 915, DateTimeKind.Local).AddTicks(8520), "Manikür ve pedikür hizmetleri", true, "Manikür & Pedikür" }
+                    { 1, new DateTime(2026, 6, 6, 15, 42, 35, 381, DateTimeKind.Local).AddTicks(5660), "Jel tırnak hizmetleri", true, "Jel Tırnak" },
+                    { 2, new DateTime(2026, 6, 6, 15, 42, 35, 381, DateTimeKind.Local).AddTicks(5670), "Protez tırnak hizmetleri", true, "Protez Tırnak" },
+                    { 3, new DateTime(2026, 6, 6, 15, 42, 35, 381, DateTimeKind.Local).AddTicks(5670), "Nail art tasarımları", true, "Nail Art" },
+                    { 4, new DateTime(2026, 6, 6, 15, 42, 35, 381, DateTimeKind.Local).AddTicks(5670), "Kirpik lifting hizmetleri", true, "Kirpik Lifting" },
+                    { 5, new DateTime(2026, 6, 6, 15, 42, 35, 381, DateTimeKind.Local).AddTicks(5670), "Manikür ve pedikür hizmetleri", true, "Manikür & Pedikür" }
                 });
 
             migrationBuilder.InsertData(
                 table: "Services",
-                columns: new[] { "Id", "CategoryId", "CreatedAt", "Description", "DurationMinutes", "IsActive", "Name", "Price", "UpdatedAt" },
+                columns: new[] { "Id", "CategoryId", "CategoryIds", "CreatedAt", "Description", "DurationMinutes", "IsActive", "Name", "Price", "UpdatedAt" },
                 values: new object[,]
                 {
-                    { 1, 5, new DateTime(2026, 6, 6, 14, 54, 34, 915, DateTimeKind.Local).AddTicks(8530), "Uzun ömürlü kalıcı oje uygulaması", 45, true, "Kalıcı Oje", 400m, null },
-                    { 2, 2, new DateTime(2026, 6, 6, 14, 54, 34, 915, DateTimeKind.Local).AddTicks(8540), "Doğal görünümlü protez tırnak tasarımı", 90, true, "Protez Tırnak", 800m, null },
-                    { 3, 5, new DateTime(2026, 6, 6, 14, 54, 34, 915, DateTimeKind.Local).AddTicks(8540), "Klasik manikür bakımı", 30, true, "Manikür", 300m, null },
-                    { 4, 1, new DateTime(2026, 6, 6, 14, 54, 34, 915, DateTimeKind.Local).AddTicks(8540), "Yüksek kaliteli jel malzemeleri ile uzun ömürlü uygulama", 60, true, "Jel Tırnak Uygulaması", 500m, null },
-                    { 5, 3, new DateTime(2026, 6, 6, 14, 54, 34, 915, DateTimeKind.Local).AddTicks(8550), "Özel nail art tasarımları ve süsleme", 75, true, "Nail Art Tasarım", 600m, null },
-                    { 6, 4, new DateTime(2026, 6, 6, 14, 54, 34, 915, DateTimeKind.Local).AddTicks(8550), "Kirpiklerinizi kıvırma ve hacimlendirme", 45, true, "Kirpik Lifting", 350m, null }
+                    { 1, null, "5", new DateTime(2026, 6, 6, 15, 42, 35, 381, DateTimeKind.Local).AddTicks(5690), "Uzun ömürlü kalıcı oje uygulaması", 45, true, "Kalıcı Oje", 400m, null },
+                    { 2, null, "2", new DateTime(2026, 6, 6, 15, 42, 35, 381, DateTimeKind.Local).AddTicks(5700), "Doğal görünümlü protez tırnak tasarımı", 90, true, "Protez Tırnak", 800m, null },
+                    { 3, null, "5", new DateTime(2026, 6, 6, 15, 42, 35, 381, DateTimeKind.Local).AddTicks(5700), "Klasik manikür bakımı", 30, true, "Manikür", 300m, null },
+                    { 4, null, "1", new DateTime(2026, 6, 6, 15, 42, 35, 381, DateTimeKind.Local).AddTicks(5710), "Yüksek kaliteli jel malzemeleri ile uzun ömürlü uygulama", 60, true, "Jel Tırnak Uygulaması", 500m, null },
+                    { 5, null, "3", new DateTime(2026, 6, 6, 15, 42, 35, 381, DateTimeKind.Local).AddTicks(5710), "Özel nail art tasarımları ve süsleme", 75, true, "Nail Art Tasarım", 600m, null },
+                    { 6, null, "4", new DateTime(2026, 6, 6, 15, 42, 35, 381, DateTimeKind.Local).AddTicks(5710), "Kirpiklerinizi kıvırma ve hacimlendirme", 45, true, "Kirpik Lifting", 350m, null }
                 });
 
             migrationBuilder.CreateIndex(
@@ -341,11 +335,6 @@ namespace NailAppAPI.Migrations
                 table: "AspNetUsers",
                 column: "NormalizedUserName",
                 unique: true);
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Galleries_CategoryId",
-                table: "Galleries",
-                column: "CategoryId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Services_CategoryId",

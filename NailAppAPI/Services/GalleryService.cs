@@ -16,34 +16,30 @@ public class GalleryService : IGalleryService
     public async Task<Gallery?> GetByIdAsync(int id)
     {
         return await _context.Galleries
-            .Include(g => g.Category)
             .FirstOrDefaultAsync(g => g.Id == id);
     }
 
     public async Task<IEnumerable<Gallery>> GetAllAsync()
     {
         return await _context.Galleries
-            .Include(g => g.Category)
             .OrderByDescending(g => g.CreatedAt)
             .ToListAsync();
     }
 
     public async Task<IEnumerable<Gallery>> GetByCategoryAsync(int categoryId)
     {
-        return await _context.Galleries
-            .Where(g => g.CategoryId == categoryId)
-            .Include(g => g.Category)
-            .OrderByDescending(g => g.CreatedAt)
-            .ToListAsync();
+        var strId = categoryId.ToString();
+        var items = await _context.Galleries.ToListAsync();
+        return items.Where(g => !string.IsNullOrEmpty(g.CategoryIds) && g.CategoryIds.Split(',').Contains(strId)).OrderByDescending(g => g.CreatedAt);
     }
 
-    public async Task<Gallery> CreateAsync(string imageUrl, string? description, int categoryId)
+    public async Task<Gallery> CreateAsync(string imageUrl, string? description, string categoryIds)
     {
         var gallery = new Gallery
         {
             ImageUrl = imageUrl,
             Description = description,
-            CategoryId = categoryId,
+            CategoryIds = categoryIds,
             CreatedAt = DateTime.UtcNow
         };
 
@@ -52,7 +48,7 @@ public class GalleryService : IGalleryService
         return gallery;
     }
 
-    public async Task<Gallery?> UpdateAsync(int id, string? imageUrl, string? description, int categoryId)
+    public async Task<Gallery?> UpdateAsync(int id, string? imageUrl, string? description, string categoryIds)
     {
         var gallery = await _context.Galleries.FindAsync(id);
         if (gallery == null)
@@ -63,7 +59,7 @@ public class GalleryService : IGalleryService
             gallery.ImageUrl = imageUrl;
         }
         gallery.Description = description;
-        gallery.CategoryId = categoryId;
+        gallery.CategoryIds = categoryIds;
 
         _context.Galleries.Update(gallery);
         await _context.SaveChangesAsync();

@@ -16,7 +16,6 @@ public class ServiceService : IServiceService
     public async Task<Service?> GetServiceByIdAsync(int id)
     {
         return await _context.Services
-            .Include(s => s.Category)
             .FirstOrDefaultAsync(s => s.Id == id && s.IsActive);
     }
 
@@ -24,19 +23,17 @@ public class ServiceService : IServiceService
     {
         return await _context.Services
             .Where(s => s.IsActive)
-            .Include(s => s.Category)
             .ToListAsync();
     }
 
     public async Task<IEnumerable<Service>> GetServicesByCategoryAsync(int categoryId)
     {
-        return await _context.Services
-            .Where(s => s.CategoryId == categoryId && s.IsActive)
-            .Include(s => s.Category)
-            .ToListAsync();
+        var strId = categoryId.ToString();
+        var services = await _context.Services.Where(s => s.IsActive).ToListAsync();
+        return services.Where(s => !string.IsNullOrEmpty(s.CategoryIds) && s.CategoryIds.Split(',').Contains(strId));
     }
 
-    public async Task<Service> CreateServiceAsync(string name, string description, decimal price, int durationMinutes, int categoryId)
+    public async Task<Service> CreateServiceAsync(string name, string description, decimal price, int durationMinutes, string categoryIds)
     {
         var service = new Service
         {
@@ -44,7 +41,7 @@ public class ServiceService : IServiceService
             Description = description,
             Price = price,
             DurationMinutes = durationMinutes,
-            CategoryId = categoryId,
+            CategoryIds = categoryIds,
             IsActive = true,
             CreatedAt = DateTime.Now
         };
@@ -54,7 +51,7 @@ public class ServiceService : IServiceService
         return service;
     }
 
-    public async Task<bool> UpdateServiceAsync(int id, string name, string description, decimal price, int durationMinutes)
+    public async Task<bool> UpdateServiceAsync(int id, string name, string description, decimal price, int durationMinutes, string categoryIds)
     {
         var service = await _context.Services.FindAsync(id);
         if (service == null)
@@ -64,6 +61,7 @@ public class ServiceService : IServiceService
         service.Description = description;
         service.Price = price;
         service.DurationMinutes = durationMinutes;
+        service.CategoryIds = categoryIds;
         service.UpdatedAt = DateTime.Now;
         await _context.SaveChangesAsync();
         return true;

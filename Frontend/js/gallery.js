@@ -40,7 +40,7 @@ async function loadGalleryItems() {
     items.forEach(item => {
         const galleryItem = document.createElement('div');
         galleryItem.className = 'gallery-full-item';
-        galleryItem.setAttribute('data-category', item.categoryId);
+        galleryItem.setAttribute('data-category', item.categoryIds || '');
         
         // API'deki imageUrl backend sunucusundan gelecek
         const imageUrl = `${API_URL.replace('/api', '')}${item.imageUrl}`;
@@ -96,8 +96,16 @@ function filterGalleryItems(activeCategories) {
     const allItems = document.querySelectorAll('.gallery-full-item');
     
     allItems.forEach(item => {
-        const itemCat = item.getAttribute('data-category');
-        if (activeCategories.includes('all') || activeCategories.includes(itemCat)) {
+        const itemCat = item.getAttribute('data-category'); // örn: "1,2" veya "5"
+        if (activeCategories.includes('all')) {
+            item.style.display = 'block';
+            return;
+        }
+
+        const itemCatsArray = itemCat ? itemCat.split(',') : [];
+        const hasMatch = itemCatsArray.some(cat => activeCategories.includes(cat));
+
+        if (hasMatch) {
             item.style.display = 'block';
         } else {
             item.style.display = 'none';
@@ -119,6 +127,7 @@ function openLightbox(imageUrl, caption) {
     document.addEventListener('keydown', handleEscKey);
 }
 
+// Lightbox kapatma
 function closeLightbox() {
     document.getElementById('lightbox').style.display = 'none';
     document.removeEventListener('keydown', handleEscKey);

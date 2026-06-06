@@ -61,7 +61,7 @@ public class GalleryController : ControllerBase
         }
 
         var imageUrl = $"/uploads/gallery/{fileName}";
-        var gallery = await _galleryService.CreateAsync(imageUrl, request.Description, request.CategoryId);
+        var gallery = await _galleryService.CreateAsync(imageUrl, request.Description, request.CategoryIds);
 
         return CreatedAtAction(nameof(GetById), new { id = gallery.Id }, gallery);
     }
@@ -100,7 +100,7 @@ public class GalleryController : ControllerBase
             newImageUrl = $"/uploads/gallery/{fileName}";
         }
 
-        var updatedItem = await _galleryService.UpdateAsync(id, newImageUrl, request.Description, request.CategoryId);
+        var updatedItem = await _galleryService.UpdateAsync(id, newImageUrl, request.Description, request.CategoryIds);
         if (updatedItem == null)
             return NotFound();
 
@@ -135,5 +135,5 @@ public class GalleryUploadRequest
 {
     public IFormFile? Image { get; set; }
     public string? Description { get; set; }
-    public int CategoryId { get; set; }
+    public string CategoryIds { get; set; } = string.Empty;
 }

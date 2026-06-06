@@ -50,12 +50,15 @@ public class ServicesController : ControllerBase
         if (string.IsNullOrWhiteSpace(request.Name))
             return BadRequest("Hizmet adı gereklidir.");
 
+        if (string.IsNullOrWhiteSpace(request.CategoryIds))
+            return BadRequest("Kategori seçimi zorunludur.");
+
         var service = await _serviceService.CreateServiceAsync(
             request.Name,
             request.Description ?? "",
             request.Price,
             request.DurationMinutes,
-            request.CategoryId
+            request.CategoryIds
         );
 
         return CreatedAtAction(nameof(GetService), new { id = service.Id }, service);
@@ -65,12 +68,16 @@ public class ServicesController : ControllerBase
     [Authorize(Roles = "Admin")]
     public async Task<IActionResult> UpdateService(int id, [FromBody] UpdateServiceRequest request)
     {
+        if (string.IsNullOrWhiteSpace(request.CategoryIds))
+            return BadRequest("Kategori seçimi zorunludur.");
+
         var success = await _serviceService.UpdateServiceAsync(
             id,
             request.Name ?? "",
             request.Description ?? "",
             request.Price,
-            request.DurationMinutes
+            request.DurationMinutes,
+            request.CategoryIds
         );
 
         if (!success)
@@ -109,7 +116,7 @@ public class CreateServiceRequest
     public int DurationMinutes { get; set; }
 
     [Required(ErrorMessage = "Kategori seçimi zorunludur.")]
-    public int CategoryId { get; set; }
+    public string CategoryIds { get; set; } = string.Empty;
 }
 
 public class UpdateServiceRequest
@@ -127,4 +134,7 @@ public class UpdateServiceRequest
     [Required(ErrorMessage = "Süre bilgisi zorunludur.")]
     [Range(1, 300, ErrorMessage = "Hizmet süresi 1 ile 300 dakika arasında olmalıdır.")]
     public int DurationMinutes { get; set; }
+
+    [Required(ErrorMessage = "Kategori seçimi zorunludur.")]
+    public string CategoryIds { get; set; } = string.Empty;
 }

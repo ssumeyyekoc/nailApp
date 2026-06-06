@@ -10,8 +10,7 @@ namespace NailAppAPI.Models
         
         public string ImageUrl { get; set; } = string.Empty;
         public string? Description { get; set; }
-        public int CategoryId { get; set; }
-        public Category? Category { get; set; }
+        public string CategoryIds { get; set; } = string.Empty; // Virgülle ayrılmış kategori ID'leri (örn: "1,2,3")
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
     }
 }

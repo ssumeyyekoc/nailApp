@@ -7,12 +7,11 @@ public class Service
     public string? Description { get; set; }
     public decimal Price { get; set; }
     public int DurationMinutes { get; set; }
-    public int CategoryId { get; set; }
+    public string CategoryIds { get; set; } = string.Empty; // Virgülle ayrılmış kategori ID'leri (örn: "1,2,3")
     public bool IsActive { get; set; } = true;
     public DateTime CreatedAt { get; set; } = DateTime.Now;
     public DateTime? UpdatedAt { get; set; }
 
     // Navigation properties
-    public Category? Category { get; set; }
     public ICollection<Appointment>? Appointments { get; set; }
 }

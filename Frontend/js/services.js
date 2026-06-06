@@ -39,7 +39,7 @@ async function loadServicesList() {
     services.forEach(service => {
         const card = document.createElement('div');
         card.className = 'service-detail-card';
-        card.setAttribute('data-category', service.categoryId);
+        card.setAttribute('data-category', service.categoryIds || '');
         
         card.innerHTML = `
             <h3>${service.name}</h3>
@@ -95,8 +95,16 @@ function filterServices(activeCategories) {
     const allCards = document.querySelectorAll('[data-category]');
     
     allCards.forEach(card => {
-        const cardCat = card.getAttribute('data-category');
-        if (activeCategories.includes('all') || activeCategories.includes(cardCat)) {
+        const cardCat = card.getAttribute('data-category'); // örn: "1,2" veya "5"
+        if (activeCategories.includes('all')) {
+            card.style.display = 'block';
+            return;
+        }
+
+        const cardCatsArray = cardCat ? cardCat.split(',') : [];
+        const hasMatch = cardCatsArray.some(cat => activeCategories.includes(cat));
+
+        if (hasMatch) {
             card.style.display = 'block';
         } else {
             card.style.display = 'none';
