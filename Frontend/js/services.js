@@ -55,29 +55,48 @@ async function loadServicesList() {
     });
 }
 
+// Filtre butonları event delegation (Çoklu Kategori Seçimi)
 function setupFilterButtons() {
     const filterSection = document.getElementById('filterSection');
     if (!filterSection) return;
 
     filterSection.addEventListener('click', function(e) {
         if (e.target.classList.contains('filter-btn')) {
-            // Remove active class from all buttons
-            filterSection.querySelectorAll('.filter-btn').forEach(btn => btn.classList.remove('active'));
-            // Add active class to clicked button
-            e.target.classList.add('active');
+            const clickedBtn = e.target;
+            const categoryId = clickedBtn.getAttribute('data-category');
+            const allBtn = filterSection.querySelector('[data-category="all"]');
+
+            if (categoryId === 'all') {
+                // "Tümü" seçilirse diğerlerini kapat
+                filterSection.querySelectorAll('.filter-btn').forEach(btn => btn.classList.remove('active'));
+                allBtn.classList.add('active');
+            } else {
+                // Diğer kategoriler seçilirse: toggle et, "Tümü" aktifse deaktif yap
+                clickedBtn.classList.toggle('active');
+                allBtn.classList.remove('active');
+
+                // Eğer aktif olan hiçbir kategori kalmadıysa otomatik "Tümü" seçilsin
+                const activeButtons = filterSection.querySelectorAll('.filter-btn.active');
+                if (activeButtons.length === 0) {
+                    allBtn.classList.add('active');
+                }
+            }
+
+            // Aktif kategorileri topla ve filtrele
+            const activeCats = Array.from(filterSection.querySelectorAll('.filter-btn.active'))
+                                    .map(btn => btn.getAttribute('data-category'));
             
-            // Filter services
-            const categoryId = e.target.getAttribute('data-category');
-            filterServices(categoryId);
+            filterServices(activeCats);
         }
     });
 }
 
-function filterServices(categoryId) {
+function filterServices(activeCategories) {
     const allCards = document.querySelectorAll('[data-category]');
     
     allCards.forEach(card => {
-        if (categoryId === 'all' || card.getAttribute('data-category') === categoryId) {
+        const cardCat = card.getAttribute('data-category');
+        if (activeCategories.includes('all') || activeCategories.includes(cardCat)) {
             card.style.display = 'block';
         } else {
             card.style.display = 'none';

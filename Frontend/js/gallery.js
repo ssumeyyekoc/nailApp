@@ -56,27 +56,48 @@ async function loadGalleryItems() {
     });
 }
 
-// Filtre butonları event delegation
+// Filtre butonları event delegation (Çoklu Kategori Seçimi)
 function setupGalleryFilterButtons() {
     const filterSection = document.getElementById('galleryFilterSection');
     if (!filterSection) return;
 
     filterSection.addEventListener('click', function(e) {
         if (e.target.classList.contains('filter-btn')) {
-            filterSection.querySelectorAll('.filter-btn').forEach(btn => btn.classList.remove('active'));
-            e.target.classList.add('active');
+            const clickedBtn = e.target;
+            const categoryId = clickedBtn.getAttribute('data-category');
+            const allBtn = filterSection.querySelector('[data-category="all"]');
+
+            if (categoryId === 'all') {
+                // "Tümü" seçilirse diğer tüm kategorileri kaldır, sadece "Tümü" kalsın
+                filterSection.querySelectorAll('.filter-btn').forEach(btn => btn.classList.remove('active'));
+                allBtn.classList.add('active');
+            } else {
+                // Özel kategori tıklandığında: aktif durumunu değiştir, "Tümü" aktifse deaktif yap
+                clickedBtn.classList.toggle('active');
+                allBtn.classList.remove('active');
+
+                // Eğer aktif olan hiçbir kategori kalmadıysa otomatik "Tümü" seçilsin
+                const activeButtons = filterSection.querySelectorAll('.filter-btn.active');
+                if (activeButtons.length === 0) {
+                    allBtn.classList.add('active');
+                }
+            }
+
+            // Seçilen tüm aktif kategorilerin ID'lerini diziye dönüştür
+            const activeCats = Array.from(filterSection.querySelectorAll('.filter-btn.active'))
+                                    .map(btn => btn.getAttribute('data-category'));
             
-            const categoryId = e.target.getAttribute('data-category');
-            filterGalleryItems(categoryId);
+            filterGalleryItems(activeCats);
         }
     });
 }
 
-function filterGalleryItems(categoryId) {
+function filterGalleryItems(activeCategories) {
     const allItems = document.querySelectorAll('.gallery-full-item');
     
     allItems.forEach(item => {
-        if (categoryId === 'all' || item.getAttribute('data-category') === categoryId) {
+        const itemCat = item.getAttribute('data-category');
+        if (activeCategories.includes('all') || activeCategories.includes(itemCat)) {
             item.style.display = 'block';
         } else {
             item.style.display = 'none';
