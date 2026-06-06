@@ -31,7 +31,7 @@ public class AuthService : IAuthService
         if (!result)
             return (false, null, "Şifre hatalı.");
 
-        var token = GenerateJwtToken(user);
+        var token = await GenerateJwtToken(user);
         return (true, token, "Başarıyla giriş yapıldı.");
     }
 
@@ -71,7 +71,7 @@ public class AuthService : IAuthService
         await Task.CompletedTask;
     }
 
-    private string GenerateJwtToken(User user)
+    private async Task<string> GenerateJwtToken(User user)
     {
         var jwtSettings = _configuration.GetSection("JwtSettings");
         var secretKey = jwtSettings["SecretKey"]!;
@@ -89,6 +89,13 @@ public class AuthService : IAuthService
             new Claim(ClaimTypes.Name, $"{user.FirstName} {user.LastName}")
         };
 
+        // Kullanıcının rollerini JWT token'a ekle
+        var roles = await _userManager.GetRolesAsync(user);
+        foreach (var role in roles)
+        {
+            claims.Add(new Claim(ClaimTypes.Role, role));
+        }
+
         var token = new JwtSecurityToken(
             issuer: issuer,
             audience: audience,
@@ -98,5 +105,20 @@ public class AuthService : IAuthService
         );
 
         return new JwtSecurityTokenHandler().WriteToken(token);
+    }
+
+    public async Task<(bool Success, string? Message)> ResetPasswordDirectAsync(string email, string newPassword)
+    {
+        var user = await _userManager.FindByEmailAsync(email);
+        if (user == null)
+            return (false, "Bu e-posta adresine kayıtlı kullanıcı bulunamadı.");
+
+        var token = await _userManager.GeneratePasswordResetTokenAsync(user);
+        var result = await _userManager.ResetPasswordAsync(user, token, newPassword);
+        
+        if (!result.Succeeded)
+            return (false, string.Join(", ", result.Errors.Select(e => e.Description)));
+
+        return (true, "Şifre başarıyla güncellendi.");
     }
 }

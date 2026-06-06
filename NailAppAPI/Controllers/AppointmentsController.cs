@@ -17,19 +17,36 @@ public class AppointmentsController : ControllerBase
     }
 
     [HttpGet("{id}")]
+    [Authorize]
     public async Task<IActionResult> GetAppointment(int id)
     {
         var appointment = await _appointmentService.GetAppointmentByIdAsync(id);
         if (appointment == null)
             return NotFound();
 
-        return Ok(appointment);//deneme açıklaması
+        var userIdClaim = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier);
+        if (userIdClaim == null || !int.TryParse(userIdClaim.Value, out var currentUserId))
+            return Unauthorized();
+
+        var isAdmin = User.IsInRole("Admin");
+        if (appointment.UserId != currentUserId && !isAdmin)
+            return Forbid();
+
+        return Ok(appointment);
     }
 
     [HttpGet("user/{userId}")]
     [Authorize]
     public async Task<IActionResult> GetUserAppointments(int userId)
     {
+        var userIdClaim = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier);
+        if (userIdClaim == null || !int.TryParse(userIdClaim.Value, out var currentUserId))
+            return Unauthorized();
+
+        var isAdmin = User.IsInRole("Admin");
+        if (currentUserId != userId && !isAdmin)
+            return Forbid();
+
         var appointments = await _appointmentService.GetUserAppointmentsAsync(userId);
         return Ok(appointments);
     }
@@ -48,6 +65,16 @@ public class AppointmentsController : ControllerBase
     {
         if (request.UserId <= 0 || request.ServiceId <= 0)
             return BadRequest("Geçersiz kullanıcı veya hizmet ID.");
+
+        var userIdClaim = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier);
+        if (userIdClaim == null || !int.TryParse(userIdClaim.Value, out var currentUserId))
+            return Unauthorized();
+
+        if (User.IsInRole("Admin"))
+            return BadRequest(new { message = "Yöneticiler randevu alamaz." });
+
+        if (currentUserId != request.UserId)
+            return Forbid();
 
         var appointment = await _appointmentService.CreateAppointmentAsync(
             request.UserId,

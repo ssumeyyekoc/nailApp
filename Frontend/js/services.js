@@ -1,9 +1,27 @@
 // Services Page Logic
 
 document.addEventListener('DOMContentLoaded', async function() {
+    await loadCategoriesForFilter();
     await loadServicesList();
     setupFilterButtons();
 });
+
+// Kategorileri API'den çekip filtre butonlarını oluştur
+async function loadCategoriesForFilter() {
+    const filterSection = document.getElementById('filterSection');
+    if (!filterSection) return;
+
+    const categories = await apiCall('/categories');
+    if (categories && categories.length > 0) {
+        categories.forEach(category => {
+            const btn = document.createElement('button');
+            btn.className = 'filter-btn';
+            btn.setAttribute('data-category', category.id);
+            btn.textContent = category.name;
+            filterSection.appendChild(btn);
+        });
+    }
+}
 
 async function loadServicesList() {
     const container = document.getElementById('servicesFullGrid');
@@ -38,19 +56,20 @@ async function loadServicesList() {
 }
 
 function setupFilterButtons() {
-    const filterButtons = document.querySelectorAll('.filter-btn');
-    
-    filterButtons.forEach(button => {
-        button.addEventListener('click', function() {
+    const filterSection = document.getElementById('filterSection');
+    if (!filterSection) return;
+
+    filterSection.addEventListener('click', function(e) {
+        if (e.target.classList.contains('filter-btn')) {
             // Remove active class from all buttons
-            filterButtons.forEach(btn => btn.classList.remove('active'));
+            filterSection.querySelectorAll('.filter-btn').forEach(btn => btn.classList.remove('active'));
             // Add active class to clicked button
-            this.classList.add('active');
+            e.target.classList.add('active');
             
             // Filter services
-            const categoryId = this.getAttribute('data-category');
+            const categoryId = e.target.getAttribute('data-category');
             filterServices(categoryId);
-        });
+        }
     });
 }
 

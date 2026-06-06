@@ -87,29 +87,43 @@ public class AppointmentService : IAppointmentService
         if (service == null)
             return Enumerable.Empty<DateTime>();
 
+        var targetDate = date.Date;
+        var nextDate = targetDate.AddDays(1);
+
         var appointmentsOnDate = await _context.Appointments
             .Where(a => a.ServiceId == serviceId && 
-                       a.AppointmentDate.Date == date.Date &&
+                       a.AppointmentDate >= targetDate && 
+                       a.AppointmentDate < nextDate &&
                        a.Status != AppointmentStatus.Cancelled)
             .ToListAsync();
 
         var availableTimes = new List<DateTime>();
         var slotDuration = service.DurationMinutes;
+        if (slotDuration <= 0)
+        {
+            slotDuration = 30; // Varsayılan süre
+        }
 
         for (int hour = BusinessHoursStart; hour < BusinessHoursEnd; hour++)
         {
             for (int minute = 0; minute < 60; minute += slotDuration)
             {
-                var slotTime = new DateTime(date.Year, date.Month, date.Day, hour, minute, 0);
+                var slotTime = new DateTime(targetDate.Year, targetDate.Month, targetDate.Day, hour, minute, 0);
                 
-                // Check if slot is available
+                // Çakışma kontrolü
                 var isBooked = appointmentsOnDate.Any(a =>
                 {
-                    var appointmentEnd = a.AppointmentDate.AddMinutes(service.DurationMinutes);
+                    var appointmentEnd = a.AppointmentDate.AddMinutes(service.DurationMinutes > 0 ? service.DurationMinutes : 30);
                     var slotEnd = slotTime.AddMinutes(slotDuration);
                     return (slotTime >= a.AppointmentDate && slotTime < appointmentEnd) ||
                            (slotEnd > a.AppointmentDate && slotEnd <= appointmentEnd);
                 });
+
+                // Geçmiş saatleri engelle (eğer seçilen gün bugün ise)
+                if (targetDate.Date == DateTime.Today && slotTime <= DateTime.Now)
+                {
+                    continue;
+                }
 
                 if (!isBooked)
                     availableTimes.Add(slotTime);
