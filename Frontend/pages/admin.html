@@ -471,8 +471,9 @@
     <!-- Category Modal -->
     <div class="modal-overlay" id="categoryModal">
         <div class="modal">
-            <h2>Yeni Kategori Ekle</h2>
+            <h2 id="categoryModalTitle">Yeni Kategori Ekle</h2>
             <form id="categoryForm">
+                <input type="hidden" id="editCategoryId">
                 <div class="form-group">
                     <label for="categoryName">Kategori Adı *</label>
                     <input type="text" id="categoryName" required>
@@ -773,7 +774,10 @@
                         <td>${category.name}</td>
                         <td>${category.description || ''}</td>
                         <td>
-                            <button class="delete-btn" onclick="deleteCategory(${category.id})">✕ Sil</button>
+                            <div class="action-btns">
+                                <button class="edit-btn" onclick="editCategory(${category.id})">✎ Düzenle</button>
+                                <button class="delete-btn" onclick="deleteCategory(${category.id})">✕ Sil</button>
+                            </div>
                         </td>
                     `;
                     tbody.appendChild(row);
@@ -781,20 +785,43 @@
             }
         }
 
-        function showCategoryModal() {
-            document.getElementById('categoryForm').reset();
+        async function showCategoryModal(categoryId = null) {
+            if (categoryId) {
+                const category = await apiCall(`/categories/${categoryId}`);
+                if (category) {
+                    document.getElementById('editCategoryId').value = category.id;
+                    document.getElementById('categoryName').value = category.name;
+                    document.getElementById('categoryDescription').value = category.description || '';
+                    document.getElementById('categoryModalTitle').textContent = 'Kategori Düzenle';
+                }
+            } else {
+                document.getElementById('categoryForm').reset();
+                document.getElementById('editCategoryId').value = '';
+                document.getElementById('categoryModalTitle').textContent = 'Yeni Kategori Ekle';
+            }
             document.getElementById('categoryModal').classList.add('active');
+        }
+
+        function editCategory(id) {
+            showCategoryModal(id);
         }
 
         document.getElementById('categoryForm').addEventListener('submit', async function(e) {
             e.preventDefault();
             
+            const categoryId = document.getElementById('editCategoryId').value;
             const data = {
                 name: document.getElementById('categoryName').value,
                 description: document.getElementById('categoryDescription').value
             };
 
-            const result = await apiCall('/categories', 'POST', data);
+            let result;
+            if (categoryId) {
+                result = await apiCall(`/categories/${categoryId}`, 'PUT', data);
+            } else {
+                result = await apiCall('/categories', 'POST', data);
+            }
+
             if (result) {
                 closeModal('categoryModal');
                 loadCategories();
