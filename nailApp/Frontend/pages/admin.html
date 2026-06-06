@@ -1,0 +1,1431 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Paneli - Nail & Lash Studio</title>
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../css/responsive.css">
+    <style>
+        .admin-container {
+            display: grid;
+            grid-template-columns: 250px 1fr;
+            min-height: calc(100vh - 100px);
+        }
+
+        .admin-sidebar {
+            background-color: var(--dark-color);
+            color: white;
+            padding: 20px 0;
+        }
+
+        .admin-sidebar ul {
+            list-style: none;
+        }
+
+        .admin-sidebar li a {
+            display: block;
+            padding: 15px 20px;
+            color: white;
+            text-decoration: none;
+            transition: var(--transition);
+            border-left: 3px solid transparent;
+        }
+
+        .admin-sidebar li a:hover,
+        .admin-sidebar li a.active {
+            background-color: var(--primary-color);
+            border-left-color: var(--secondary-color);
+        }
+
+        .admin-content {
+            padding: 40px;
+            background-color: #f9f9f9;
+        }
+
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-bottom: 40px;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 20px;
+            border-radius: var(--border-radius);
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .stat-card h3 {
+            color: var(--text-color);
+            margin-bottom: 10px;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+        }
+
+        .stat-value {
+            font-size: 2.5rem;
+            font-weight: bold;
+            color: var(--primary-color);
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .table-responsive {
+            background: white;
+            padding: 20px;
+            border-radius: var(--border-radius);
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th {
+            background-color: var(--dark-color);
+            color: white;
+            padding: 15px;
+            text-align: left;
+        }
+
+        td {
+            padding: 15px;
+            border-bottom: 1px solid #ddd;
+        }
+
+        tr:hover {
+            background-color: #f5f5f5;
+        }
+
+        .action-btns {
+            display: flex;
+            gap: 10px;
+        }
+
+        .edit-btn, .delete-btn, .approve-btn {
+            padding: 8px 12px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: var(--transition);
+        }
+
+        .edit-btn {
+            background-color: #3498db;
+            color: white;
+        }
+
+        .edit-btn:hover {
+            background-color: #2980b9;
+        }
+
+        .delete-btn {
+            background-color: #e74c3c;
+            color: white;
+        }
+
+        .delete-btn:hover {
+            background-color: #c0392b;
+        }
+
+        .approve-btn {
+            background-color: #27ae60;
+            color: white;
+        }
+
+        .approve-btn:hover {
+            background-color: #229954;
+        }
+
+        .form-inline {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        /* Modal Styles */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.5);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal-overlay.active {
+            display: flex;
+        }
+
+        .modal {
+            background: white;
+            border-radius: var(--border-radius);
+            padding: 30px;
+            width: 90%;
+            max-width: 500px;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            animation: fadeIn 0.3s ease;
+        }
+
+        .modal h2 {
+            color: var(--primary-color);
+            margin-bottom: 20px;
+        }
+
+        .modal .form-group {
+            margin-bottom: 15px;
+        }
+
+        .modal-actions {
+            display: flex;
+            gap: 10px;
+            justify-content: flex-end;
+            margin-top: 20px;
+        }
+
+        .btn-cancel {
+            padding: 10px 20px;
+            border: 1px solid #ddd;
+            background: white;
+            border-radius: var(--border-radius);
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .btn-cancel:hover {
+            background: #f5f5f5;
+        }
+
+        /* Gallery Upload */
+        .gallery-upload-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .gallery-admin-item {
+            position: relative;
+            border-radius: var(--border-radius);
+            overflow: hidden;
+            width: 100%;
+            aspect-ratio: 1 / 1;
+        }
+
+        .gallery-admin-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .gallery-admin-item .delete-overlay {
+            position: absolute;
+            top: 5px;
+            right: 5px;
+        }
+
+        .gallery-admin-item .delete-overlay button {
+            background: rgba(231, 76, 60, 0.9);
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.8rem;
+        }
+
+        /* Admin Mobile Hamburger */
+        .admin-hamburger {
+            display: none;
+            flex-direction: column;
+            gap: 5px;
+            cursor: pointer;
+            background: none;
+            border: none;
+            padding: 8px;
+        }
+        .admin-hamburger span {
+            display: block;
+            width: 24px;
+            height: 2px;
+            background: white;
+            border-radius: 2px;
+            transition: var(--transition);
+        }
+        .admin-mobile-menu {
+            display: none;
+            background: var(--dark-color);
+            padding: 10px 0;
+            flex-direction: column;
+        }
+        .admin-mobile-menu.open {
+            display: flex;
+        }
+        .admin-mobile-menu a {
+            padding: 12px 20px;
+            color: white;
+            text-decoration: none;
+            transition: var(--transition);
+            border-left: 3px solid transparent;
+        }
+        .admin-mobile-menu a:hover {
+            background: var(--primary-color);
+            border-left-color: var(--secondary-color);
+        }
+        /* Announcement card styles */
+        .announcement-card {
+            background: white;
+            border-radius: var(--border-radius);
+            box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+            padding: 20px;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: flex-start;
+            gap: 15px;
+            border-left: 4px solid var(--primary-color);
+        }
+        .announcement-card.inactive {
+            border-left-color: #bbb;
+            opacity: 0.7;
+        }
+        .announcement-emoji {
+            font-size: 2rem;
+            flex-shrink: 0;
+        }
+        .announcement-body {
+            flex: 1;
+        }
+        .announcement-body h3 {
+            margin: 0 0 5px;
+            color: var(--dark-color);
+        }
+        .announcement-body p {
+            margin: 0 0 8px;
+            color: var(--text-color);
+            font-size: 0.9rem;
+        }
+        .announcement-badge {
+            display: inline-block;
+            background: var(--primary-color);
+            color: white;
+            border-radius: 20px;
+            padding: 2px 10px;
+            font-size: 0.78rem;
+            font-weight: 600;
+        }
+        .announcement-status {
+            display: inline-block;
+            border-radius: 20px;
+            padding: 2px 10px;
+            font-size: 0.78rem;
+            font-weight: 600;
+            margin-left: 8px;
+        }
+        .announcement-status.active { background: #d4edda; color: #155724; }
+        .announcement-status.inactive { background: #f8d7da; color: #721c24; }
+        @media (max-width: 768px) {
+            .admin-container {
+                grid-template-columns: 1fr;
+            }
+            .admin-sidebar {
+                display: none;
+            }
+            .admin-hamburger {
+                display: flex;
+            }
+            .admin-content {
+                padding: 20px;
+            }
+            table {
+                font-size: 0.9rem;
+            }
+            th, td {
+                padding: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="container">
+            <div class="navbar-content">
+                <div class="logo">
+                    <h1>✨ Admin Paneli</h1>
+                </div>
+                <button class="admin-hamburger" id="adminHamburger" onclick="toggleAdminMobileMenu()">
+                    <span></span><span></span><span></span>
+                </button>
+                <ul class="nav-menu">
+                    <li><a href="../index.html">Ana Sayfa</a></li>
+                    <li id="authMenu"></li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+    <!-- Mobile Sidebar Menu -->
+    <div class="admin-mobile-menu" id="adminMobileMenu">
+        <a href="#" onclick="showTab('dashboard'); closeMobileMenu()">📊 Dashboard</a>
+        <a href="#" onclick="showTab('appointments'); closeMobileMenu()">📅 Randevular</a>
+        <a href="#" onclick="showTab('services'); closeMobileMenu()">💄 Hizmetler</a>
+        <a href="#" onclick="showTab('categories'); closeMobileMenu()">📂 Kategoriler</a>
+        <a href="#" onclick="showTab('gallery'); closeMobileMenu()">🖼️ Galeri</a>
+        <a href="#" onclick="showTab('announcements'); closeMobileMenu()">📢 Kampanyalar</a>
+        <a href="#" onclick="showTab('users'); closeMobileMenu()">👥 Kullanıcılar</a>
+        <a href="#" onclick="logout()">🚪 Çıkış Yap</a>
+    </div>
+
+    <!-- Admin Container -->
+    <div class="admin-container">
+        <!-- Sidebar -->
+        <div class="admin-sidebar">
+            <ul>
+                <li><a href="#" onclick="showTab('dashboard')" class="nav-link active">📊 Dashboard</a></li>
+                <li><a href="#" onclick="showTab('appointments')" class="nav-link">📅 Randevular</a></li>
+                <li><a href="#" onclick="showTab('services')" class="nav-link">💄 Hizmetler</a></li>
+                <li><a href="#" onclick="showTab('categories')" class="nav-link">📂 Kategoriler</a></li>
+                <li><a href="#" onclick="showTab('gallery')" class="nav-link">🖼️ Galeri</a></li>
+                <li><a href="#" onclick="showTab('announcements')" class="nav-link">📢 Kampanyalar</a></li>
+                <li><a href="#" onclick="showTab('users')" class="nav-link">👥 Kullanıcılar</a></li>
+                <li><a href="#" onclick="logout()" class="nav-link">🚪 Çıkış Yap</a></li>
+            </ul>
+        </div>
+
+        <!-- Content -->
+        <div class="admin-content">
+            <!-- Dashboard Tab -->
+            <div id="dashboard" class="tab-content active">
+                <h1>Dashboard</h1>
+                <div class="dashboard-grid">
+                    <div class="stat-card">
+                        <h3>Toplam Randevu</h3>
+                        <div class="stat-value" id="totalAppointments">0</div>
+                    </div>
+                    <div class="stat-card">
+                        <h3>Beklemede</h3>
+                        <div class="stat-value" id="pendingAppointments">0</div>
+                    </div>
+                    <div class="stat-card">
+                        <h3>Aktif Hizmetler</h3>
+                        <div class="stat-value" id="totalServices">0</div>
+                    </div>
+                    <div class="stat-card">
+                        <h3>Galeri Öğeleri</h3>
+                        <div class="stat-value" id="totalGallery">0</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Appointments Tab -->
+            <div id="appointments" class="tab-content">
+                <h1>Randevu Yönetimi</h1>
+                <div class="table-responsive">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Müşteri</th>
+                                <th>Hizmet</th>
+                                <th>Tarih</th>
+                                <th>Durum</th>
+                                <th>İşlemler</th>
+                            </tr>
+                        </thead>
+                        <tbody id="appointmentsTable">
+                            <!-- Appointments will be loaded here -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Services Tab -->
+            <div id="services" class="tab-content">
+                <h1>Hizmet Yönetimi</h1>
+                <div class="form-inline">
+                    <button class="btn btn-primary" onclick="showServiceModal()">+ Yeni Hizmet</button>
+                </div>
+                <div class="table-responsive">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Adı</th>
+                                <th>Fiyat</th>
+                                <th>Süre</th>
+                                <th>Kategori</th>
+                                <th>İşlemler</th>
+                            </tr>
+                        </thead>
+                        <tbody id="servicesTable">
+                            <!-- Services will be loaded here -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Categories Tab -->
+            <div id="categories" class="tab-content">
+                <h1>Kategori Yönetimi</h1>
+                <div class="form-inline">
+                    <button class="btn btn-primary" onclick="showCategoryModal()">+ Yeni Kategori</button>
+                </div>
+                <div class="table-responsive">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Adı</th>
+                                <th>Açıklama</th>
+                                <th>İşlemler</th>
+                            </tr>
+                        </thead>
+                        <tbody id="categoriesTable">
+                            <!-- Categories will be loaded here -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Gallery Tab -->
+            <div id="gallery" class="tab-content">
+                <h1>Galeri Yönetimi</h1>
+                <div class="form-inline">
+                    <button class="btn btn-primary" onclick="showGalleryUploadModal()">+ Resim Yükle</button>
+                </div>
+                <div class="gallery-upload-grid" id="galleryAdminGrid">
+                    <!-- Gallery items will be loaded here -->
+                </div>
+            </div>
+
+            <!-- Announcements Tab -->
+            <div id="announcements" class="tab-content">
+                <h1>Kampanya &amp; Duyuru Yönetimi</h1>
+                <div class="form-inline" style="margin-bottom:20px;">
+                    <button class="btn btn-primary" onclick="showAnnouncementModal()">+ Yeni Kampanya</button>
+                </div>
+                <div id="announcementsList">
+                    <!-- Announcements will be loaded here -->
+                </div>
+            </div>
+
+            <!-- Users Tab -->
+            <div id="users" class="tab-content">
+                <h1>Kullanıcı Yönetimi</h1>
+                <div class="table-responsive">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Ad</th>
+                                <th>Soyad</th>
+                                <th>E-posta</th>
+                                <th>Kayıt Tarihi</th>
+                                <th>İşlemler</th>
+                            </tr>
+                        </thead>
+                        <tbody id="usersTable">
+                            <!-- Users will be loaded here -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Service Modal -->
+    <div class="modal-overlay" id="serviceModal">
+        <div class="modal">
+            <h2 id="serviceModalTitle">Yeni Hizmet Ekle</h2>
+            <form id="serviceForm">
+                <input type="hidden" id="serviceId">
+                <div class="form-group">
+                    <label for="serviceName">Hizmet Adı *</label>
+                    <input type="text" id="serviceName" required maxlength="100">
+                </div>
+                <div class="form-group">
+                    <label for="serviceDescription">Açıklama</label>
+                    <textarea id="serviceDescription" rows="3"></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="servicePrice">Fiyat (₺) *</label>
+                    <input type="number" id="servicePrice" required min="1" step="0.01">
+                </div>
+                <div class="form-group">
+                    <label for="serviceDuration">Süre (dakika) *</label>
+                    <input type="number" id="serviceDuration" required min="1" max="300">
+                </div>
+                <div class="form-group">
+                    <label>Kategoriler * (Birden fazla seçebilirsiniz)</label>
+                    <div id="serviceCategoriesContainer" style="display: flex; flex-direction: column; gap: 8px; max-height: 150px; overflow-y: auto; border: 1px solid #ddd; padding: 10px; border-radius: var(--border-radius); background: white;">
+                        <!-- Checkbox'lar JavaScript ile dinamik olarak doldurulacak -->
+                    </div>
+                </div>
+                <div class="modal-actions">
+                    <button type="button" class="btn-cancel" onclick="closeModal('serviceModal')">İptal</button>
+                    <button type="submit" class="btn btn-primary">Kaydet</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Category Modal -->
+    <div class="modal-overlay" id="categoryModal">
+        <div class="modal">
+            <h2 id="categoryModalTitle">Yeni Kategori Ekle</h2>
+            <form id="categoryForm">
+                <input type="hidden" id="editCategoryId">
+                <div class="form-group">
+                    <label for="categoryName">Kategori Adı *</label>
+                    <input type="text" id="categoryName" required>
+                </div>
+                <div class="form-group">
+                    <label for="categoryDescription">Açıklama</label>
+                    <textarea id="categoryDescription" rows="3"></textarea>
+                </div>
+                <div class="modal-actions">
+                    <button type="button" class="btn-cancel" onclick="closeModal('categoryModal')">İptal</button>
+                    <button type="submit" class="btn btn-primary">Kaydet</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Gallery Upload Modal -->
+    <div class="modal-overlay" id="galleryUploadModal">
+        <div class="modal">
+            <h2 id="galleryModalTitle">Resim Yükle</h2>
+            <form id="galleryUploadForm" enctype="multipart/form-data">
+                <input type="hidden" id="editGalleryId">
+                <div class="form-group">
+                    <label for="galleryImage">Resim Seçin <span id="galleryImageRequiredStar">*</span></label>
+                    <input type="file" id="galleryImage" accept="image/*">
+                </div>
+                <div id="imagePreviewContainer" style="display:none; margin-bottom: 15px; text-align: center;">
+                    <img id="imagePreview" style="max-width: 100%; max-height: 200px; border-radius: var(--border-radius); border: 1px solid #ddd;">
+                    <p id="imageOriginalSize" style="margin-top: 8px; font-size: 0.85rem; color: #888;"></p>
+                </div>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                    <div class="form-group">
+                        <label for="galleryResizeWidth">Genişlik (px)</label>
+                        <input type="number" id="galleryResizeWidth" min="50" max="4000" placeholder="Ör: 800">
+                    </div>
+                    <div class="form-group">
+                        <label for="galleryResizeHeight">Yükseklik (px)</label>
+                        <input type="number" id="galleryResizeHeight" min="50" max="4000" placeholder="Ör: 600">
+                    </div>
+                </div>
+                <div class="form-group" style="margin-bottom: 5px;">
+                    <label style="display: flex; align-items: center; gap: 8px; cursor: pointer; font-size: 0.9rem;">
+                        <input type="checkbox" id="galleryKeepAspectRatio" checked style="width: auto;">
+                        En-boy oranını koru
+                    </label>
+                </div>
+                <div class="form-group">
+                    <label for="galleryDescription">Açıklama</label>
+                    <input type="text" id="galleryDescription">
+                </div>
+                <div class="form-group">
+                    <label>Kategoriler * (Birden fazla seçebilirsiniz)</label>
+                    <div id="galleryCategoriesContainer" style="display: flex; flex-direction: column; gap: 8px; max-height: 150px; overflow-y: auto; border: 1px solid #ddd; padding: 10px; border-radius: var(--border-radius); background: white;">
+                        <!-- Checkbox'lar JavaScript ile dinamik olarak doldurulacak -->
+                    </div>
+                </div>
+                <div class="modal-actions">
+                    <button type="button" class="btn-cancel" onclick="closeModal('galleryUploadModal')">İptal</button>
+                    <button type="submit" class="btn btn-primary" id="gallerySubmitBtn">Yükle</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- User Modal -->
+    <div class="modal-overlay" id="userModal">
+        <div class="modal">
+            <h2>Kullanıcı Düzenle</h2>
+            <form id="userForm">
+                <input type="hidden" id="editUserId">
+                <div class="form-group">
+                    <label for="editUserFirstName">Adı *</label>
+                    <input type="text" id="editUserFirstName" required maxlength="50">
+                </div>
+                <div class="form-group">
+                    <label for="editUserLastName">Soyadı *</label>
+                    <input type="text" id="editUserLastName" required maxlength="50">
+                </div>
+                <div class="form-group">
+                    <label for="editUserEmail">E-posta *</label>
+                    <input type="email" id="editUserEmail" required>
+                </div>
+                <div class="form-group">
+                    <label for="editUserPhone">Telefon</label>
+                    <input type="tel" id="editUserPhone">
+                </div>
+                <div class="modal-actions">
+                    <button type="button" class="btn-cancel" onclick="closeModal('userModal')">İptal</button>
+                    <button type="submit" class="btn btn-primary">Kaydet</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <p>&copy; 2024 Nail &amp; Lash Studio Admin Panel. Tüm Hakları Saklıdır.</p>
+        </div>
+    </footer>
+
+    <script src="../js/main.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            if (!currentUser || !isAdmin()) {
+                window.location.href = 'login.html';
+            }
+            loadDashboardData();
+        });
+
+        function isAdmin() {
+            return currentUser && currentUser.roles && currentUser.roles.includes('Admin');
+        }
+
+        // ============ TAB NAVIGATION ============
+        function showTab(tabName) {
+            document.querySelectorAll('.tab-content').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            
+            document.querySelectorAll('.nav-link').forEach(link => {
+                link.classList.remove('active');
+            });
+
+            document.getElementById(tabName).classList.add('active');
+            event.target.classList.add('active');
+
+            if (tabName === 'dashboard') loadDashboardData();
+            else if (tabName === 'appointments') loadAppointments();
+            else if (tabName === 'services') loadAdminServices();
+            else if (tabName === 'categories') loadCategories();
+            else if (tabName === 'gallery') loadAdminGallery();
+            else if (tabName === 'announcements') loadAnnouncements();
+            else if (tabName === 'users') loadUsers();
+        }
+
+        // ============ ADMIN MOBILE MENU ============
+        function toggleAdminMobileMenu() {
+            const menu = document.getElementById('adminMobileMenu');
+            menu.classList.toggle('open');
+        }
+        function closeMobileMenu() {
+            document.getElementById('adminMobileMenu').classList.remove('open');
+        }
+
+        // ============ MODAL HELPERS ============
+        function closeModal(modalId) {
+            document.getElementById(modalId).classList.remove('active');
+        }
+
+        // ============ DASHBOARD ============
+        async function loadDashboardData() {
+            const appointments = await apiCall('/appointments');
+            const services = await apiCall('/services');
+            const gallery = await apiCall('/gallery');
+
+            document.getElementById('totalAppointments').textContent = appointments?.length || 0;
+            document.getElementById('pendingAppointments').textContent = 
+                appointments?.filter(a => a.status === 0).length || 0;
+            document.getElementById('totalServices').textContent = services?.length || 0;
+            document.getElementById('totalGallery').textContent = gallery?.length || 0;
+        }
+
+        // ============ APPOINTMENTS ============
+        async function loadAppointments() {
+            const appointments = await apiCall('/appointments');
+            const tbody = document.getElementById('appointmentsTable');
+            tbody.innerHTML = '';
+
+            if (appointments && Array.isArray(appointments)) {
+                appointments.forEach(apt => {
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td>${apt.user?.firstName || ''} ${apt.user?.lastName || ''}</td>
+                        <td>${apt.service?.name || ''}</td>
+                        <td>${formatDateTime(apt.appointmentDate)}</td>
+                        <td>${getStatusLabel(apt.status)}</td>
+                        <td>
+                            <div class="action-btns">
+                                <button class="approve-btn" onclick="approveAppointment(${apt.id})">✓ Onayla</button>
+                                <button class="delete-btn" onclick="deleteAppointment(${apt.id})">✕ Sil</button>
+                            </div>
+                        </td>
+                    `;
+                    tbody.appendChild(row);
+                });
+            }
+        }
+
+        async function approveAppointment(id) {
+            const success = await apiCall(`/appointments/${id}/status`, 'PUT', { status: 1 });
+            if (success) {
+                loadAppointments();
+            }
+        }
+
+        async function deleteAppointment(id) {
+            if (confirm('Bu randevuyu silmek istediğinizden emin misiniz?')) {
+                await apiCall(`/appointments/${id}`, 'DELETE');
+                loadAppointments();
+            }
+        }
+
+        // Kategori ID'lerini isimlere dönüştüren yardımcı fonksiyon
+        function getCategoryNames(categoryIds, allCategories) {
+            if (!categoryIds || !allCategories) return '';
+            const ids = categoryIds.split(',');
+            return allCategories
+                .filter(cat => ids.includes(cat.id.toString()))
+                .map(cat => cat.name)
+                .join(', ');
+        }
+
+        // ============ SERVICES CRUD ============
+        async function loadAdminServices() {
+            const services = await apiCall('/services');
+            const categories = await apiCall('/categories');
+            const tbody = document.getElementById('servicesTable');
+            tbody.innerHTML = '';
+
+            if (services && Array.isArray(services)) {
+                services.forEach(service => {
+                    const row = document.createElement('tr');
+                    const categoryNames = getCategoryNames(service.categoryIds, categories);
+                    row.innerHTML = `
+                        <td>${service.name}</td>
+                        <td>₺${service.price}</td>
+                        <td>${service.durationMinutes} dk</td>
+                        <td>${categoryNames}</td>
+                        <td>
+                            <div class="action-btns">
+                                <button class="edit-btn" onclick="editService(${service.id})">✎ Düzenle</button>
+                                <button class="delete-btn" onclick="deleteService(${service.id})">✕ Sil</button>
+                            </div>
+                        </td>
+                    `;
+                    tbody.appendChild(row);
+                });
+            }
+        }
+
+        async function showServiceModal(serviceId = null) {
+            // Kategorileri yükle
+            const categories = await apiCall('/categories');
+            const container = document.getElementById('serviceCategoriesContainer');
+            container.innerHTML = '';
+            
+            if (categories && Array.isArray(categories)) {
+                categories.forEach(cat => {
+                    container.innerHTML += `
+                        <label style="display: flex; align-items: center; gap: 8px; font-weight: normal; cursor: pointer;">
+                            <input type="checkbox" name="serviceCategoryCheck" value="${cat.id}" style="width: auto;">
+                            ${cat.name}
+                        </label>
+                    `;
+                });
+            }
+
+            // Düzenleme moduysa verileri doldur
+            if (serviceId) {
+                const service = await apiCall(`/services/${serviceId}`);
+                if (service) {
+                    document.getElementById('serviceId').value = service.id;
+                    document.getElementById('serviceName').value = service.name;
+                    document.getElementById('serviceDescription').value = service.description || '';
+                    document.getElementById('servicePrice').value = service.price;
+                    document.getElementById('serviceDuration').value = service.durationMinutes;
+                    
+                    // Kayıtlı kategorileri işaretle
+                    if (service.categoryIds) {
+                        const ids = service.categoryIds.split(',');
+                        document.querySelectorAll('input[name="serviceCategoryCheck"]').forEach(cb => {
+                            if (ids.includes(cb.value)) {
+                                cb.checked = true;
+                            }
+                        });
+                    }
+                    
+                    document.getElementById('serviceModalTitle').textContent = 'Hizmet Düzenle';
+                }
+            } else {
+                document.getElementById('serviceForm').reset();
+                document.getElementById('serviceId').value = '';
+                document.getElementById('serviceModalTitle').textContent = 'Yeni Hizmet Ekle';
+            }
+
+            document.getElementById('serviceModal').classList.add('active');
+        }
+
+        function editService(id) {
+            showServiceModal(id);
+        }
+
+        document.getElementById('serviceForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            // Seçili checkbox'ların ID'lerini topla
+            const checkedBoxes = document.querySelectorAll('input[name="serviceCategoryCheck"]:checked');
+            const categoryIds = Array.from(checkedBoxes).map(cb => cb.value).join(',');
+
+            if (!categoryIds) {
+                alert('Lütfen en az bir kategori seçin.');
+                return;
+            }
+
+            const serviceId = document.getElementById('serviceId').value;
+            const data = {
+                name: document.getElementById('serviceName').value,
+                description: document.getElementById('serviceDescription').value,
+                price: parseFloat(document.getElementById('servicePrice').value),
+                durationMinutes: parseInt(document.getElementById('serviceDuration').value),
+                categoryIds: categoryIds
+            };
+
+            let result;
+            if (serviceId) {
+                result = await apiCall(`/services/${serviceId}`, 'PUT', data);
+            } else {
+                result = await apiCall('/services', 'POST', data);
+            }
+
+            if (result) {
+                closeModal('serviceModal');
+                loadAdminServices();
+            }
+        });
+
+        async function deleteService(id) {
+            if (confirm('Bu hizmeti silmek istediğinizden emin misiniz?')) {
+                await apiCall(`/services/${id}`, 'DELETE');
+                loadAdminServices();
+            }
+        }
+
+        // ============ CATEGORIES CRUD ============
+        async function loadCategories() {
+            const response = await apiCall('/categories');
+            const tbody = document.getElementById('categoriesTable');
+            tbody.innerHTML = '';
+
+            if (response && Array.isArray(response)) {
+                response.forEach(category => {
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td>${category.name}</td>
+                        <td>${category.description || ''}</td>
+                        <td>
+                            <div class="action-btns">
+                                <button class="edit-btn" onclick="editCategory(${category.id})">✎ Düzenle</button>
+                                <button class="delete-btn" onclick="deleteCategory(${category.id})">✕ Sil</button>
+                            </div>
+                        </td>
+                    `;
+                    tbody.appendChild(row);
+                });
+            }
+        }
+
+        async function showCategoryModal(categoryId = null) {
+            if (categoryId) {
+                const category = await apiCall(`/categories/${categoryId}`);
+                if (category) {
+                    document.getElementById('editCategoryId').value = category.id;
+                    document.getElementById('categoryName').value = category.name;
+                    document.getElementById('categoryDescription').value = category.description || '';
+                    document.getElementById('categoryModalTitle').textContent = 'Kategori Düzenle';
+                }
+            } else {
+                document.getElementById('categoryForm').reset();
+                document.getElementById('editCategoryId').value = '';
+                document.getElementById('categoryModalTitle').textContent = 'Yeni Kategori Ekle';
+            }
+            document.getElementById('categoryModal').classList.add('active');
+        }
+
+        function editCategory(id) {
+            showCategoryModal(id);
+        }
+
+        document.getElementById('categoryForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const categoryId = document.getElementById('editCategoryId').value;
+            const data = {
+                name: document.getElementById('categoryName').value,
+                description: document.getElementById('categoryDescription').value
+            };
+
+            let result;
+            if (categoryId) {
+                result = await apiCall(`/categories/${categoryId}`, 'PUT', data);
+            } else {
+                result = await apiCall('/categories', 'POST', data);
+            }
+
+            if (result) {
+                closeModal('categoryModal');
+                loadCategories();
+            }
+        });
+
+        async function deleteCategory(id) {
+            if (confirm('Bu kategoriyi silmek istediğinizden emin misiniz?')) {
+                await apiCall(`/categories/${id}`, 'DELETE');
+                loadCategories();
+            }
+        }
+
+        // ============ GALLERY MANAGEMENT ============
+        async function loadAdminGallery() {
+            const items = await apiCall('/gallery');
+            const container = document.getElementById('galleryAdminGrid');
+            container.innerHTML = '';
+
+            if (items && Array.isArray(items) && items.length > 0) {
+                items.forEach(item => {
+                    const imageUrl = `${API_URL.replace('/api', '')}${item.imageUrl}`;
+                    const div = document.createElement('div');
+                    div.className = 'gallery-admin-item';
+                    div.innerHTML = `
+                        <img src="${imageUrl}" alt="${item.description || ''}">
+                        <div class="delete-overlay" style="display: flex; gap: 5px; top: 5px; right: 5px;">
+                            <button onclick="editGalleryItem(${item.id})" style="background: rgba(52, 152, 219, 0.9);">✎ Düzenle</button>
+                            <button onclick="deleteGalleryItem(${item.id})">✕ Sil</button>
+                        </div>
+                    `;
+                    container.appendChild(div);
+                });
+            } else {
+                container.innerHTML = '<p class="no-data">Henüz galeri öğesi yok.</p>';
+            }
+        }
+
+        async function showGalleryUploadModal() {
+            // Kategorileri yükle
+            const categories = await apiCall('/categories');
+            const container = document.getElementById('galleryCategoriesContainer');
+            container.innerHTML = '';
+            
+            if (categories && Array.isArray(categories)) {
+                categories.forEach(cat => {
+                    container.innerHTML += `
+                        <label style="display: flex; align-items: center; gap: 8px; font-weight: normal; cursor: pointer;">
+                            <input type="checkbox" name="galleryCategoryCheck" value="${cat.id}" style="width: auto;">
+                            ${cat.name}
+                        </label>
+                    `;
+                });
+            }
+            
+            document.getElementById('galleryUploadForm').reset();
+            document.getElementById('editGalleryId').value = '';
+            document.getElementById('galleryModalTitle').textContent = 'Resim Yükle';
+            document.getElementById('gallerySubmitBtn').textContent = 'Yükle';
+            document.getElementById('galleryImageRequiredStar').style.display = 'inline';
+            document.getElementById('galleryImage').setAttribute('required', 'required');
+            document.getElementById('imagePreviewContainer').style.display = 'none';
+            document.getElementById('galleryUploadModal').classList.add('active');
+        }
+
+        async function editGalleryItem(id) {
+            const categories = await apiCall('/categories');
+            const container = document.getElementById('galleryCategoriesContainer');
+            container.innerHTML = '';
+            
+            if (categories && Array.isArray(categories)) {
+                categories.forEach(cat => {
+                    container.innerHTML += `
+                        <label style="display: flex; align-items: center; gap: 8px; font-weight: normal; cursor: pointer;">
+                            <input type="checkbox" name="galleryCategoryCheck" value="${cat.id}" style="width: auto;">
+                            ${cat.name}
+                        </label>
+                    `;
+                });
+            }
+
+            const item = await apiCall(`/gallery/${id}`);
+            if (item) {
+                document.getElementById('editGalleryId').value = item.id;
+                document.getElementById('galleryDescription').value = item.description || '';
+                
+                // Kayıtlı kategorileri işaretle
+                if (item.categoryIds) {
+                    const ids = item.categoryIds.split(',');
+                    document.querySelectorAll('input[name="galleryCategoryCheck"]').forEach(cb => {
+                        if (ids.includes(cb.value)) {
+                            cb.checked = true;
+                        }
+                    });
+                }
+                
+                document.getElementById('galleryModalTitle').textContent = 'Resim Düzenle';
+                document.getElementById('gallerySubmitBtn').textContent = 'Kaydet';
+                document.getElementById('galleryImageRequiredStar').style.display = 'none';
+                document.getElementById('galleryImage').removeAttribute('required');
+
+                // Önizleme görselini yükle
+                const imageUrl = `${API_URL.replace('/api', '')}${item.imageUrl}`;
+                const previewImg = document.getElementById('imagePreview');
+                const previewContainer = document.getElementById('imagePreviewContainer');
+                const sizeInfo = document.getElementById('imageOriginalSize');
+                
+                previewImg.src = imageUrl;
+                previewContainer.style.display = 'block';
+                sizeInfo.textContent = 'Mevcut resim gösteriliyor. Değiştirmek istemiyorsanız yeni dosya seçmeyin.';
+
+                document.getElementById('galleryUploadModal').classList.add('active');
+            }
+        }
+
+        // Resim seçildiğinde önizleme göster ve boyut bilgilerini doldur
+        document.getElementById('galleryImage').addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            const previewContainer = document.getElementById('imagePreviewContainer');
+            const previewImg = document.getElementById('imagePreview');
+            const sizeInfo = document.getElementById('imageOriginalSize');
+            const widthInput = document.getElementById('galleryResizeWidth');
+            const heightInput = document.getElementById('galleryResizeHeight');
+
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(evt) {
+                    previewImg.src = evt.target.result;
+                    previewContainer.style.display = 'block';
+
+                    const img = new Image();
+                    img.onload = function() {
+                        sizeInfo.textContent = `Orijinal boyut: ${img.width} x ${img.height} px`;
+                        widthInput.value = img.width;
+                        heightInput.value = img.height;
+                        widthInput.setAttribute('data-original-width', img.width);
+                        heightInput.setAttribute('data-original-height', img.height);
+                    };
+                    img.src = evt.target.result;
+                };
+                reader.readAsDataURL(file);
+            } else {
+                if (!document.getElementById('editGalleryId').value) {
+                    previewContainer.style.display = 'none';
+                }
+                widthInput.value = '';
+                heightInput.value = '';
+            }
+        });
+
+        // En-boy oranını koruma mantığı
+        document.getElementById('galleryResizeWidth').addEventListener('input', function() {
+            if (!document.getElementById('galleryKeepAspectRatio').checked) return;
+            const origW = parseInt(this.getAttribute('data-original-width'));
+            const origH = parseInt(this.getAttribute('data-original-height'));
+            const newW = parseInt(this.value);
+            if (origW && origH && newW) {
+                document.getElementById('galleryResizeHeight').value = Math.round(newW * origH / origW);
+            }
+        });
+
+        document.getElementById('galleryResizeHeight').addEventListener('input', function() {
+            if (!document.getElementById('galleryKeepAspectRatio').checked) return;
+            const origW = parseInt(document.getElementById('galleryResizeWidth').getAttribute('data-original-width'));
+            const origH = parseInt(this.getAttribute('data-original-height'));
+            const newH = parseInt(this.value);
+            if (origW && origH && newH) {
+                document.getElementById('galleryResizeWidth').value = Math.round(newH * origW / origH);
+            }
+        });
+
+        // Canvas ile resmi yeniden boyutlandırma (Akıllı Merkezden Kırpma / Crop to Fit)
+        function resizeImageFile(file, targetWidth, targetHeight) {
+            return new Promise((resolve) => {
+                const reader = new FileReader();
+                reader.onload = function(evt) {
+                    const img = new Image();
+                    img.onload = function() {
+                        const canvas = document.createElement('canvas');
+                        canvas.width = targetWidth;
+                        canvas.height = targetHeight;
+                        const ctx = canvas.getContext('2d');
+                        
+                        // Orijinal ve hedef en-boy oranlarını hesapla
+                        const originalRatio = img.width / img.height;
+                        const targetRatio = targetWidth / targetHeight;
+                        
+                        let srcX = 0;
+                        let srcY = 0;
+                        let srcWidth = img.width;
+                        let srcHeight = img.height;
+                        
+                        if (originalRatio > targetRatio) {
+                            // Orijinal resim daha geniş: Yanlardan kes (Sol/Sağ)
+                            srcWidth = img.height * targetRatio;
+                            srcX = (img.width - srcWidth) / 2;
+                        } else if (originalRatio < targetRatio) {
+                            // Orijinal resim daha uzun: Üst ve alttan kes
+                            srcHeight = img.width / targetRatio;
+                            srcY = (img.height - srcHeight) / 2;
+                        }
+                        
+                        // Merkezden kırparak çiz
+                        ctx.drawImage(img, srcX, srcY, srcWidth, srcHeight, 0, 0, targetWidth, targetHeight);
+                        
+                        canvas.toBlob(function(blob) {
+                            const resizedFile = new File([blob], file.name, { type: file.type || 'image/jpeg' });
+                            resolve(resizedFile);
+                        }, file.type || 'image/jpeg', 0.9);
+                    };
+                    img.src = evt.target.result;
+                };
+                reader.readAsDataURL(file);
+            });
+        }
+
+        document.getElementById('galleryUploadForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+
+            const editId = document.getElementById('editGalleryId').value;
+            let imageFile = document.getElementById('galleryImage').files[0];
+            
+            if (!editId && !imageFile) {
+                alert('Lütfen bir resim dosyası seçin.');
+                return;
+            }
+
+            // Seçili checkbox'ların ID'lerini topla
+            const checkedBoxes = document.querySelectorAll('input[name="galleryCategoryCheck"]:checked');
+            const categoryIds = Array.from(checkedBoxes).map(cb => cb.value).join(',');
+
+            if (!categoryIds) {
+                alert('Lütfen en az bir kategori seçin.');
+                return;
+            }
+
+            const targetWidth = parseInt(document.getElementById('galleryResizeWidth').value);
+            const targetHeight = parseInt(document.getElementById('galleryResizeHeight').value);
+
+            // Boyut değerleri girilmişse ve orijinalden farklıysa yeniden boyutlandır
+            if (imageFile && targetWidth && targetHeight) {
+                const origW = parseInt(document.getElementById('galleryResizeWidth').getAttribute('data-original-width'));
+                const origH = parseInt(document.getElementById('galleryResizeHeight').getAttribute('data-original-height'));
+                if (targetWidth !== origW || targetHeight !== origH) {
+                    imageFile = await resizeImageFile(imageFile, targetWidth, targetHeight);
+                }
+            }
+
+            const formData = new FormData();
+            if (imageFile) {
+                formData.append('image', imageFile);
+            }
+            formData.append('description', document.getElementById('galleryDescription').value);
+            formData.append('categoryIds', categoryIds);
+
+            try {
+                const url = editId ? `${API_URL}/gallery/${editId}` : `${API_URL}/gallery`;
+                const method = editId ? 'PUT' : 'POST';
+                
+                const response = await fetch(url, {
+                    method: method,
+                    headers: {
+                        'Authorization': `Bearer ${authToken}`
+                    },
+                    body: formData
+                });
+
+                if (response.ok) {
+                    closeModal('galleryUploadModal');
+                    loadAdminGallery();
+                } else {
+                    alert('İşlem sırasında bir hata oluştu.');
+                }
+            } catch (error) {
+                console.error('Error saving gallery item:', error);
+                alert('İşlem sırasında bir hata oluştu.');
+            }
+        });
+
+        async function deleteGalleryItem(id) {
+            if (confirm('Bu resmi silmek istediğinizden emin misiniz?')) {
+                await apiCall(`/gallery/${id}`, 'DELETE');
+                loadAdminGallery();
+            }
+        }
+
+        // ============ USERS MANAGEMENT ============
+        async function loadUsers() {
+            const users = await apiCall('/users');
+            const tbody = document.getElementById('usersTable');
+            tbody.innerHTML = '';
+
+            if (users && Array.isArray(users)) {
+                users.forEach(user => {
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td>${user.firstName || ''}</td>
+                        <td>${user.lastName || ''}</td>
+                        <td>${user.email}</td>
+                        <td>${formatDate(user.createdAt)}</td>
+                        <td>
+                            <div class="action-btns">
+                                <button class="edit-btn" onclick="editUser(${user.id})">✎ Düzenle</button>
+                                <button class="delete-btn" onclick="deleteUser(${user.id})">✕ Sil</button>
+                            </div>
+                        </td>
+                    `;
+                    tbody.appendChild(row);
+                });
+            }
+        }
+
+        async function editUser(id) {
+            const user = await apiCall(`/users/${id}`);
+            if (user && !user.error) {
+                document.getElementById('editUserId').value = user.id;
+                document.getElementById('editUserFirstName').value = user.firstName || '';
+                document.getElementById('editUserLastName').value = user.lastName || '';
+                document.getElementById('editUserEmail').value = user.email || '';
+                document.getElementById('editUserPhone').value = user.phoneNumber || '';
+                document.getElementById('userModal').classList.add('active');
+            } else {
+                alert('Kullanıcı bilgileri yüklenemedi.');
+            }
+        }
+
+        document.getElementById('userForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            const id = document.getElementById('editUserId').value;
+            const data = {
+                firstName: document.getElementById('editUserFirstName').value,
+                lastName: document.getElementById('editUserLastName').value,
+                email: document.getElementById('editUserEmail').value,
+                phoneNumber: document.getElementById('editUserPhone').value
+            };
+
+            const result = await apiCall(`/users/${id}`, 'PUT', data);
+            if (result && !result.error) {
+                closeModal('userModal');
+                loadUsers();
+            } else {
+                alert(result?.message || 'Kullanıcı güncellenirken hata oluştu.');
+            }
+        });
+
+        async function deleteUser(id) {
+            if (confirm('Bu kullanıcıyı silmek istediğinizden emin misiniz? (Kullanıcının randevuları da silinecektir.)')) {
+                const result = await apiCall(`/users/${id}`, 'DELETE');
+                if (result && !result.error) {
+                    loadUsers();
+                } else {
+                    alert(result?.message || 'Kullanıcı silinirken hata oluştu.');
+                }
+            }
+        }
+
+        // ============ ANNOUNCEMENTS MANAGEMENT ============
+        async function loadAnnouncements() {
+            const items = await apiCall('/announcements/all');
+            const container = document.getElementById('announcementsList');
+            container.innerHTML = '';
+
+            if (!items || !Array.isArray(items) || items.length === 0) {
+                container.innerHTML = '<p class="no-data">Henüz kampanya/duyuru eklenmemiş.</p>';
+                return;
+            }
+
+            items.forEach(item => {
+                const card = document.createElement('div');
+                card.className = `announcement-card ${item.isActive ? '' : 'inactive'}`;
+                card.innerHTML = `
+                    <div class="announcement-emoji">${item.emoji || '📢'}</div>
+                    <div class="announcement-body">
+                        <h3>${item.title}</h3>
+                        <p>${item.content}</p>
+                        ${item.badgeText ? `<span class="announcement-badge">${item.badgeText}</span>` : ''}
+                        <span class="announcement-status ${item.isActive ? 'active' : 'inactive'}">${item.isActive ? '✓ Aktif' : '✗ Pasif'}</span>
+                    </div>
+                    <div class="action-btns" style="flex-shrink:0;">
+                        <button class="edit-btn" onclick="editAnnouncement(${item.id})">✎ Düzenle</button>
+                        <button class="delete-btn" onclick="deleteAnnouncement(${item.id})">✕ Sil</button>
+                    </div>
+                `;
+                container.appendChild(card);
+            });
+        }
+
+        function showAnnouncementModal(announcementId = null) {
+            document.getElementById('announcementForm').reset();
+            document.getElementById('editAnnouncementId').value = '';
+            document.getElementById('announcementActive').checked = true;
+            document.getElementById('announcementModalTitle').textContent = 'Yeni Kampanya Ekle';
+            document.getElementById('announcementModal').classList.add('active');
+        }
+
+        async function editAnnouncement(id) {
+            const items = await apiCall('/announcements/all');
+            const item = items && items.find(a => a.id === id);
+            if (!item) return;
+
+            document.getElementById('editAnnouncementId').value = item.id;
+            document.getElementById('announcementEmoji').value = item.emoji || '';
+            document.getElementById('announcementTitle').value = item.title;
+            document.getElementById('announcementContent').value = item.content;
+            document.getElementById('announcementBadge').value = item.badgeText || '';
+            document.getElementById('announcementActive').checked = item.isActive;
+            document.getElementById('announcementModalTitle').textContent = 'Kampanya Düzenle';
+            document.getElementById('announcementModal').classList.add('active');
+        }
+
+        document.getElementById('announcementForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            const id = document.getElementById('editAnnouncementId').value;
+            const data = {
+                title: document.getElementById('announcementTitle').value,
+                content: document.getElementById('announcementContent').value,
+                emoji: document.getElementById('announcementEmoji').value || '📢',
+                badgeText: document.getElementById('announcementBadge').value,
+                isActive: document.getElementById('announcementActive').checked
+            };
+
+            let result;
+            if (id) {
+                result = await apiCall(`/announcements/${id}`, 'PUT', data);
+            } else {
+                result = await apiCall('/announcements', 'POST', data);
+            }
+
+            if (result && !result.error) {
+                closeModal('announcementModal');
+                loadAnnouncements();
+            } else {
+                alert(result?.message || 'İşlem sırasında bir hata oluştu.');
+            }
+        });
+
+        async function deleteAnnouncement(id) {
+            if (confirm('Bu kampanyayı silmek istediğinizden emin misiniz?')) {
+                await apiCall(`/announcements/${id}`, 'DELETE');
+                loadAnnouncements();
+            }
+        }
+    </script>
+</body>
+</html>
+
