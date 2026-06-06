@@ -134,8 +134,9 @@ namespace NailAppAPI.Migrations
                     b.Property<int>("ServiceId")
                         .HasColumnType("INTEGER");
 
-                    b.Property<int>("Status")
-                        .HasColumnType("INTEGER");
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
 
                     b.Property<DateTime?>("UpdatedAt")
                         .HasColumnType("TEXT");
@@ -178,7 +179,7 @@ namespace NailAppAPI.Migrations
                         new
                         {
                             Id = 1,
-                            CreatedAt = new DateTime(2026, 6, 5, 13, 27, 6, 326, DateTimeKind.Local).AddTicks(240),
+                            CreatedAt = new DateTime(2026, 6, 6, 14, 54, 34, 915, DateTimeKind.Local).AddTicks(8510),
                             Description = "Jel tırnak hizmetleri",
                             IsActive = true,
                             Name = "Jel Tırnak"
@@ -186,7 +187,7 @@ namespace NailAppAPI.Migrations
                         new
                         {
                             Id = 2,
-                            CreatedAt = new DateTime(2026, 6, 5, 13, 27, 6, 326, DateTimeKind.Local).AddTicks(250),
+                            CreatedAt = new DateTime(2026, 6, 6, 14, 54, 34, 915, DateTimeKind.Local).AddTicks(8510),
                             Description = "Protez tırnak hizmetleri",
                             IsActive = true,
                             Name = "Protez Tırnak"
@@ -194,7 +195,7 @@ namespace NailAppAPI.Migrations
                         new
                         {
                             Id = 3,
-                            CreatedAt = new DateTime(2026, 6, 5, 13, 27, 6, 326, DateTimeKind.Local).AddTicks(250),
+                            CreatedAt = new DateTime(2026, 6, 6, 14, 54, 34, 915, DateTimeKind.Local).AddTicks(8520),
                             Description = "Nail art tasarımları",
                             IsActive = true,
                             Name = "Nail Art"
@@ -202,7 +203,7 @@ namespace NailAppAPI.Migrations
                         new
                         {
                             Id = 4,
-                            CreatedAt = new DateTime(2026, 6, 5, 13, 27, 6, 326, DateTimeKind.Local).AddTicks(250),
+                            CreatedAt = new DateTime(2026, 6, 6, 14, 54, 34, 915, DateTimeKind.Local).AddTicks(8520),
                             Description = "Kirpik lifting hizmetleri",
                             IsActive = true,
                             Name = "Kirpik Lifting"
@@ -210,7 +211,7 @@ namespace NailAppAPI.Migrations
                         new
                         {
                             Id = 5,
-                            CreatedAt = new DateTime(2026, 6, 5, 13, 27, 6, 326, DateTimeKind.Local).AddTicks(250),
+                            CreatedAt = new DateTime(2026, 6, 6, 14, 54, 34, 915, DateTimeKind.Local).AddTicks(8520),
                             Description = "Manikür ve pedikür hizmetleri",
                             IsActive = true,
                             Name = "Manikür & Pedikür"
@@ -280,7 +281,7 @@ namespace NailAppAPI.Migrations
                         {
                             Id = 1,
                             ConcurrencyStamp = "admin-stamp",
-                            CreatedAt = new DateTime(2026, 6, 5, 13, 27, 6, 326, DateTimeKind.Local).AddTicks(60),
+                            CreatedAt = new DateTime(2026, 6, 6, 14, 54, 34, 915, DateTimeKind.Local).AddTicks(8410),
                             Description = "Sistem yöneticisi",
                             Name = "Admin",
                             NormalizedName = "ADMIN"
@@ -289,7 +290,7 @@ namespace NailAppAPI.Migrations
                         {
                             Id = 2,
                             ConcurrencyStamp = "customer-stamp",
-                            CreatedAt = new DateTime(2026, 6, 5, 13, 27, 6, 326, DateTimeKind.Local).AddTicks(120),
+                            CreatedAt = new DateTime(2026, 6, 6, 14, 54, 34, 915, DateTimeKind.Local).AddTicks(8450),
                             Description = "Kayıtlı müşteri",
                             Name = "Customer",
                             NormalizedName = "CUSTOMER"
@@ -321,7 +322,7 @@ namespace NailAppAPI.Migrations
                         .HasColumnType("TEXT");
 
                     b.Property<decimal>("Price")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("decimal(18,2)");
 
                     b.Property<DateTime?>("UpdatedAt")
                         .HasColumnType("TEXT");
@@ -337,7 +338,7 @@ namespace NailAppAPI.Migrations
                         {
                             Id = 1,
                             CategoryId = 5,
-                            CreatedAt = new DateTime(2026, 6, 5, 13, 27, 6, 326, DateTimeKind.Local).AddTicks(270),
+                            CreatedAt = new DateTime(2026, 6, 6, 14, 54, 34, 915, DateTimeKind.Local).AddTicks(8530),
                             Description = "Uzun ömürlü kalıcı oje uygulaması",
                             DurationMinutes = 45,
                             IsActive = true,
@@ -348,7 +349,7 @@ namespace NailAppAPI.Migrations
                         {
                             Id = 2,
                             CategoryId = 2,
-                            CreatedAt = new DateTime(2026, 6, 5, 13, 27, 6, 326, DateTimeKind.Local).AddTicks(270),
+                            CreatedAt = new DateTime(2026, 6, 6, 14, 54, 34, 915, DateTimeKind.Local).AddTicks(8540),
                             Description = "Doğal görünümlü protez tırnak tasarımı",
                             DurationMinutes = 90,
                             IsActive = true,
@@ -359,7 +360,7 @@ namespace NailAppAPI.Migrations
                         {
                             Id = 3,
                             CategoryId = 5,
-                            CreatedAt = new DateTime(2026, 6, 5, 13, 27, 6, 326, DateTimeKind.Local).AddTicks(280),
+                            CreatedAt = new DateTime(2026, 6, 6, 14, 54, 34, 915, DateTimeKind.Local).AddTicks(8540),
                             Description = "Klasik manikür bakımı",
                             DurationMinutes = 30,
                             IsActive = true,
@@ -370,7 +371,7 @@ namespace NailAppAPI.Migrations
                         {
                             Id = 4,
                             CategoryId = 1,
-                            CreatedAt = new DateTime(2026, 6, 5, 13, 27, 6, 326, DateTimeKind.Local).AddTicks(280),
+                            CreatedAt = new DateTime(2026, 6, 6, 14, 54, 34, 915, DateTimeKind.Local).AddTicks(8540),
                             Description = "Yüksek kaliteli jel malzemeleri ile uzun ömürlü uygulama",
                             DurationMinutes = 60,
                             IsActive = true,
@@ -381,7 +382,7 @@ namespace NailAppAPI.Migrations
                         {
                             Id = 5,
                             CategoryId = 3,
-                            CreatedAt = new DateTime(2026, 6, 5, 13, 27, 6, 326, DateTimeKind.Local).AddTicks(280),
+                            CreatedAt = new DateTime(2026, 6, 6, 14, 54, 34, 915, DateTimeKind.Local).AddTicks(8550),
                             Description = "Özel nail art tasarımları ve süsleme",
                             DurationMinutes = 75,
                             IsActive = true,
@@ -392,7 +393,7 @@ namespace NailAppAPI.Migrations
                         {
                             Id = 6,
                             CategoryId = 4,
-                            CreatedAt = new DateTime(2026, 6, 5, 13, 27, 6, 326, DateTimeKind.Local).AddTicks(280),
+                            CreatedAt = new DateTime(2026, 6, 6, 14, 54, 34, 915, DateTimeKind.Local).AddTicks(8550),
                             Description = "Kirpiklerinizi kıvırma ve hacimlendirme",
                             DurationMinutes = 45,
                             IsActive = true,

@@ -11,8 +11,8 @@ using NailAppAPI.Data;
 namespace NailAppAPI.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20260518080702_AddSeedDataWithCategory")]
-    partial class AddSeedDataWithCategory
+    [Migration("20260606115435_InitialCreate")]
+    partial class InitialCreate
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -137,8 +137,9 @@ namespace NailAppAPI.Migrations
                     b.Property<int>("ServiceId")
                         .HasColumnType("INTEGER");
 
-                    b.Property<int>("Status")
-                        .HasColumnType("INTEGER");
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
 
                     b.Property<DateTime?>("UpdatedAt")
                         .HasColumnType("TEXT");
@@ -181,10 +182,69 @@ namespace NailAppAPI.Migrations
                         new
                         {
                             Id = 1,
-                            CreatedAt = new DateTime(2026, 5, 18, 11, 7, 1, 996, DateTimeKind.Local).AddTicks(6060),
+                            CreatedAt = new DateTime(2026, 6, 6, 14, 54, 34, 915, DateTimeKind.Local).AddTicks(8510),
+                            Description = "Jel tırnak hizmetleri",
                             IsActive = true,
-                            Name = "Tırnak Bakımı"
+                            Name = "Jel Tırnak"
+                        },
+                        new
+                        {
+                            Id = 2,
+                            CreatedAt = new DateTime(2026, 6, 6, 14, 54, 34, 915, DateTimeKind.Local).AddTicks(8510),
+                            Description = "Protez tırnak hizmetleri",
+                            IsActive = true,
+                            Name = "Protez Tırnak"
+                        },
+                        new
+                        {
+                            Id = 3,
+                            CreatedAt = new DateTime(2026, 6, 6, 14, 54, 34, 915, DateTimeKind.Local).AddTicks(8520),
+                            Description = "Nail art tasarımları",
+                            IsActive = true,
+                            Name = "Nail Art"
+                        },
+                        new
+                        {
+                            Id = 4,
+                            CreatedAt = new DateTime(2026, 6, 6, 14, 54, 34, 915, DateTimeKind.Local).AddTicks(8520),
+                            Description = "Kirpik lifting hizmetleri",
+                            IsActive = true,
+                            Name = "Kirpik Lifting"
+                        },
+                        new
+                        {
+                            Id = 5,
+                            CreatedAt = new DateTime(2026, 6, 6, 14, 54, 34, 915, DateTimeKind.Local).AddTicks(8520),
+                            Description = "Manikür ve pedikür hizmetleri",
+                            IsActive = true,
+                            Name = "Manikür & Pedikür"
                         });
+                });
+
+            modelBuilder.Entity("NailAppAPI.Models.Gallery", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("CategoryId")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Description")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("ImageUrl")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CategoryId");
+
+                    b.ToTable("Galleries");
                 });
 
             modelBuilder.Entity("NailAppAPI.Models.Role", b =>
@@ -218,6 +278,26 @@ namespace NailAppAPI.Migrations
                         .HasDatabaseName("RoleNameIndex");
 
                     b.ToTable("AspNetRoles", (string)null);
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            ConcurrencyStamp = "admin-stamp",
+                            CreatedAt = new DateTime(2026, 6, 6, 14, 54, 34, 915, DateTimeKind.Local).AddTicks(8410),
+                            Description = "Sistem yöneticisi",
+                            Name = "Admin",
+                            NormalizedName = "ADMIN"
+                        },
+                        new
+                        {
+                            Id = 2,
+                            ConcurrencyStamp = "customer-stamp",
+                            CreatedAt = new DateTime(2026, 6, 6, 14, 54, 34, 915, DateTimeKind.Local).AddTicks(8450),
+                            Description = "Kayıtlı müşteri",
+                            Name = "Customer",
+                            NormalizedName = "CUSTOMER"
+                        });
                 });
 
             modelBuilder.Entity("NailAppAPI.Models.Service", b =>
@@ -245,7 +325,7 @@ namespace NailAppAPI.Migrations
                         .HasColumnType("TEXT");
 
                     b.Property<decimal>("Price")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("decimal(18,2)");
 
                     b.Property<DateTime?>("UpdatedAt")
                         .HasColumnType("TEXT");
@@ -260,9 +340,10 @@ namespace NailAppAPI.Migrations
                         new
                         {
                             Id = 1,
-                            CategoryId = 1,
-                            CreatedAt = new DateTime(2026, 5, 18, 11, 7, 1, 996, DateTimeKind.Local).AddTicks(6150),
-                            DurationMinutes = 0,
+                            CategoryId = 5,
+                            CreatedAt = new DateTime(2026, 6, 6, 14, 54, 34, 915, DateTimeKind.Local).AddTicks(8530),
+                            Description = "Uzun ömürlü kalıcı oje uygulaması",
+                            DurationMinutes = 45,
                             IsActive = true,
                             Name = "Kalıcı Oje",
                             Price = 400m
@@ -270,9 +351,10 @@ namespace NailAppAPI.Migrations
                         new
                         {
                             Id = 2,
-                            CategoryId = 1,
-                            CreatedAt = new DateTime(2026, 5, 18, 11, 7, 1, 996, DateTimeKind.Local).AddTicks(6150),
-                            DurationMinutes = 0,
+                            CategoryId = 2,
+                            CreatedAt = new DateTime(2026, 6, 6, 14, 54, 34, 915, DateTimeKind.Local).AddTicks(8540),
+                            Description = "Doğal görünümlü protez tırnak tasarımı",
+                            DurationMinutes = 90,
                             IsActive = true,
                             Name = "Protez Tırnak",
                             Price = 800m
@@ -280,12 +362,46 @@ namespace NailAppAPI.Migrations
                         new
                         {
                             Id = 3,
-                            CategoryId = 1,
-                            CreatedAt = new DateTime(2026, 5, 18, 11, 7, 1, 996, DateTimeKind.Local).AddTicks(6150),
-                            DurationMinutes = 0,
+                            CategoryId = 5,
+                            CreatedAt = new DateTime(2026, 6, 6, 14, 54, 34, 915, DateTimeKind.Local).AddTicks(8540),
+                            Description = "Klasik manikür bakımı",
+                            DurationMinutes = 30,
                             IsActive = true,
                             Name = "Manikür",
                             Price = 300m
+                        },
+                        new
+                        {
+                            Id = 4,
+                            CategoryId = 1,
+                            CreatedAt = new DateTime(2026, 6, 6, 14, 54, 34, 915, DateTimeKind.Local).AddTicks(8540),
+                            Description = "Yüksek kaliteli jel malzemeleri ile uzun ömürlü uygulama",
+                            DurationMinutes = 60,
+                            IsActive = true,
+                            Name = "Jel Tırnak Uygulaması",
+                            Price = 500m
+                        },
+                        new
+                        {
+                            Id = 5,
+                            CategoryId = 3,
+                            CreatedAt = new DateTime(2026, 6, 6, 14, 54, 34, 915, DateTimeKind.Local).AddTicks(8550),
+                            Description = "Özel nail art tasarımları ve süsleme",
+                            DurationMinutes = 75,
+                            IsActive = true,
+                            Name = "Nail Art Tasarım",
+                            Price = 600m
+                        },
+                        new
+                        {
+                            Id = 6,
+                            CategoryId = 4,
+                            CreatedAt = new DateTime(2026, 6, 6, 14, 54, 34, 915, DateTimeKind.Local).AddTicks(8550),
+                            Description = "Kirpiklerinizi kıvırma ve hacimlendirme",
+                            DurationMinutes = 45,
+                            IsActive = true,
+                            Name = "Kirpik Lifting",
+                            Price = 350m
                         });
                 });
 
@@ -434,6 +550,17 @@ namespace NailAppAPI.Migrations
                     b.Navigation("Service");
 
                     b.Navigation("User");
+                });
+
+            modelBuilder.Entity("NailAppAPI.Models.Gallery", b =>
+                {
+                    b.HasOne("NailAppAPI.Models.Category", "Category")
+                        .WithMany()
+                        .HasForeignKey("CategoryId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Category");
                 });
 
             modelBuilder.Entity("NailAppAPI.Models.Service", b =>
