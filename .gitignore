@@ -1,7 +1,10 @@
 .DS_Store
 *.db
+*.db-shm
+*.db-wal
 *.sqlite
 *.sqlite3
+wwwroot/uploads/
 node_modules/
 bin/
 obj/

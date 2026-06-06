@@ -12,6 +12,11 @@ document.addEventListener('DOMContentLoaded', async function() {
 
     document.getElementById('appointmentDate').min = getMinDateString();
     
+    const timeSelect = document.getElementById('appointmentTime');
+    if (timeSelect) {
+        timeSelect.innerHTML = '<option value="">-- Önce Hizmet & Tarih Seçin --</option>';
+    }
+    
     const form = document.getElementById('appointmentForm');
     if (form) {
         form.addEventListener('submit', handleAppointmentSubmit);
@@ -28,6 +33,24 @@ document.addEventListener('DOMContentLoaded', async function() {
     }
 
     if (currentUser) {
+        const isAdmin = currentUser.roles && currentUser.roles.includes('Admin');
+        if (isAdmin) {
+            const formContainer = document.querySelector('.appointment-form-container');
+            if (formContainer) {
+                formContainer.innerHTML = `
+                    <div class="login-required-card" style="text-align: center; padding: 30px 15px;">
+                        <span style="font-size: 3.5rem; display: block; margin-bottom: 20px;">🛡️</span>
+                        <h3 style="margin: 0 0 15px; font-size: 1.8rem; font-family: 'Playfair Display', serif; color: var(--dark-color);">Yönetici Yetkisi</h3>
+                        <p style="color: var(--text-color); margin-bottom: 30px; font-size: 0.95rem; line-height: 1.7; max-width: 450px; margin-left: auto; margin-right: auto;">
+                            Sistem yöneticileri randevu oluşturamazlar. Randevuları izlemek ve yönetmek için lütfen yönetim paneline geçiş yapın.
+                        </p>
+                        <a href="admin.html" class="btn btn-primary" style="padding: 12px 40px; font-weight: 600;">Yönetim Paneline Git</a>
+                    </div>
+                `;
+            }
+            return;
+        }
+
         // Pre-fill user info
         document.getElementById('firstName').value = currentUser.firstName || '';
         document.getElementById('lastName').value = currentUser.lastName || '';
@@ -36,6 +59,20 @@ document.addEventListener('DOMContentLoaded', async function() {
         
         // Load appointment history
         loadAppointmentHistory();
+    } else {
+        const formContainer = document.querySelector('.appointment-form-container');
+        if (formContainer) {
+            formContainer.innerHTML = `
+                <div class="login-required-card" style="text-align: center; padding: 30px 15px;">
+                    <span style="font-size: 3.5rem; display: block; margin-bottom: 20px;">✨</span>
+                    <h3 style="margin: 0 0 15px; font-size: 1.8rem; font-family: 'Playfair Display', serif; color: var(--dark-color);">Randevu Oluşturun</h3>
+                    <p style="color: var(--text-color); margin-bottom: 30px; font-size: 0.95rem; line-height: 1.7; max-width: 450px; margin-left: auto; margin-right: auto;">
+                        Nail & Lash Studio kalitesini deneyimlemek için hemen randevu alın. İşlemlerinizi kolayca takip edebilmek için üye girişi yapmanız gerekmektedir.
+                    </p>
+                    <a href="login.html" class="btn btn-primary" style="padding: 12px 40px; font-weight: 600;">Giriş Yap / Üye Ol</a>
+                </div>
+            `;
+        }
     }
 });
 
@@ -44,6 +81,9 @@ async function loadServicesForForm() {
     const serviceSelect = document.getElementById('service');
     
     if (!serviceSelect) return;
+    
+    // Statik eklenmiş seçenekleri temizle (sadece placeholder kalsın)
+    serviceSelect.innerHTML = '<option value="">-- Hizmet Seçin --</option>';
     
     services.forEach(service => {
         const option = document.createElement('option');
@@ -56,18 +96,34 @@ async function loadServicesForForm() {
 async function handleServiceChange() {
     const serviceId = document.getElementById('service').value;
     const dateInput = document.getElementById('appointmentDate');
+    const timeSelect = document.getElementById('appointmentTime');
+    
+    if (!serviceId) {
+        timeSelect.innerHTML = '<option value="">-- Saat Seçin --</option>';
+        return;
+    }
     
     if (serviceId && dateInput.value) {
         await loadAvailableTimes(serviceId, dateInput.value);
+    } else {
+        timeSelect.innerHTML = '<option value="">-- Tarih Seçin --</option>';
     }
 }
 
 async function handleDateChange() {
     const serviceId = document.getElementById('service').value;
     const dateValue = document.getElementById('appointmentDate').value;
+    const timeSelect = document.getElementById('appointmentTime');
+    
+    if (!dateValue) {
+        timeSelect.innerHTML = '<option value="">-- Saat Seçin --</option>';
+        return;
+    }
     
     if (serviceId && dateValue) {
         await loadAvailableTimes(serviceId, dateValue);
+    } else {
+        timeSelect.innerHTML = '<option value="">-- Hizmet Seçin --</option>';
     }
 }
 
@@ -119,12 +175,21 @@ async function handleAppointmentSubmit(e) {
 
     const result = await apiCall('/appointments', 'POST', appointmentData);
 
-    if (result) {
-        showMessage('Randevunuz başarıyla oluşturulmuştur! Yakında size iletişime geçeceğiz.', 'success', 'appointmentMessage');
+    if (result && !result.error) {
+        showMessage('Randevunuz başarıyla oluşturulmuştur! Yakında sizinle iletişime geçeceğiz.', 'success', 'appointmentMessage');
         document.getElementById('appointmentForm').reset();
         document.getElementById('appointmentDate').min = getMinDateString();
+        // Saat seçim kutusunu sıfırla
+        const timeSelect = document.getElementById('appointmentTime');
+        if (timeSelect) {
+            timeSelect.innerHTML = '<option value="">-- Önce Hizmet & Tarih Seçin --</option>';
+        }
+        // Randevu geçmişini güncelle
+        if (currentUser) {
+            loadAppointmentHistory();
+        }
     } else {
-        showMessage('Randevu oluşturulurken bir hata oluştu. Lütfen tekrar deneyiniz.', 'error', 'appointmentMessage');
+        showMessage(result?.message || 'Randevu oluşturulurken bir hata oluştu. Lütfen tekrar deneyiniz.', 'error', 'appointmentMessage');
     }
 }
 

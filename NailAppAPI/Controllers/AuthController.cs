@@ -1,5 +1,7 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Identity;
+using NailAppAPI.Models;
 using NailAppAPI.Services;
 
 namespace NailAppAPI.Controllers;
@@ -9,10 +11,12 @@ namespace NailAppAPI.Controllers;
 public class AuthController : ControllerBase
 {
     private readonly IAuthService _authService;
+    private readonly UserManager<User> _userManager;
 
-    public AuthController(IAuthService authService)
+    public AuthController(IAuthService authService, UserManager<User> userManager)
     {
         _authService = authService;
+        _userManager = userManager;
     }
 
     [HttpPost("register")]
@@ -30,7 +34,7 @@ public class AuthController : ControllerBase
         );
 
         if (!success)
-            return BadRequest(message);
+            return BadRequest(new { message });
 
         return Ok(new { message });
     }
@@ -75,14 +79,32 @@ public class AuthController : ControllerBase
         if (user == null)
             return NotFound();
 
+        var roles = await _userManager.GetRolesAsync(user);
+
         return Ok(new
         {
             id = user.Id,
             email = user.Email,
             firstName = user.FirstName,
             lastName = user.LastName,
-            phoneNumber = user.PhoneNumber
+            phoneNumber = user.PhoneNumber,
+            roles = roles
         });
+    }
+
+    [HttpPost("reset-password")]
+    [AllowAnonymous]
+    public async Task<IActionResult> ResetPassword([FromBody] ResetPasswordRequest request)
+    {
+        if (string.IsNullOrWhiteSpace(request.Email) || string.IsNullOrWhiteSpace(request.NewPassword))
+            return BadRequest("E-posta ve yeni şifre alanları zorunludur.");
+
+        var (success, message) = await _authService.ResetPasswordDirectAsync(request.Email, request.NewPassword);
+
+        if (!success)
+            return BadRequest(new { message });
+
+        return Ok(new { message });
     }
 }
 
@@ -98,4 +120,10 @@ public class RegisterRequest
     public string? Password { get; set; }
     public string? FirstName { get; set; }
     public string? LastName { get; set; }
+}
+
+public class ResetPasswordRequest
+{
+    public string? Email { get; set; }
+    public string? NewPassword { get; set; }
 }

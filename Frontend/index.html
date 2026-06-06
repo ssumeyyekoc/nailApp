@@ -3,7 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Tırnak & Kirpik Lifting - Randevu Sistemi</title>
+    <meta name="description" content="Nail & Lash Studio - Profesyonel tırnak bakımı, nail art, protez tırnak ve kirpik lifting hizmetleri. Online randevu alın.">
+    <title>Nail & Lash Studio — Tırnak & Kirpik Lifting Randevu Sistemi</title>
     <link rel="stylesheet" href="css/style.css">
     <link rel="stylesheet" href="css/responsive.css">
 </head>
@@ -15,9 +16,15 @@
                 <div class="logo">
                     <h1>✨ Nail & Lash Studio</h1>
                 </div>
-                <ul class="nav-menu">
-                    <li><a href="index.html">Ana Sayfa</a></li>
+                <button class="hamburger" id="hamburgerBtn" onclick="toggleMobileMenu()">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </button>
+                <ul class="nav-menu" id="navMenu">
+                    <li><a href="index.html" class="active">Ana Sayfa</a></li>
                     <li><a href="pages/services.html">Hizmetler</a></li>
+                    <li><a href="pages/gallery.html">Galeri</a></li>
                     <li><a href="pages/appointments.html">Randevu</a></li>
                     <li id="authMenu">
                         <a href="pages/login.html">Giriş Yap</a>
@@ -31,31 +38,81 @@
     <section class="hero">
         <div class="hero-content">
             <h2>Güzelliğiniz Bizim Önceliğimiz</h2>
-            <p>Profesyonel tırnak ve kirpik lifting hizmetleri</p>
-            <a href="pages/appointments.html" class="btn btn-primary">Randevu Al</a>
+            <p>Profesyonel tırnak bakımı, nail art ve kirpik lifting hizmetleri</p>
+            <div class="hero-buttons">
+                <a href="pages/appointments.html" class="btn btn-primary">Randevu Al</a>
+                <a href="pages/services.html" class="btn btn-outline">Hizmetleri Gör</a>
+            </div>
         </div>
     </section>
 
-    <!-- Featured Services -->
+    <!-- Announcements / Campaigns -->
+    <section class="announcements">
+        <div class="container">
+            <div class="announcement-banner">
+                <div class="announcement-icon">🎉</div>
+                <div class="announcement-text">
+                    <h3>Yeni Sezon Kampanyası!</h3>
+                    <p>İlk randevunuza özel <strong>%20 indirim</strong> fırsatını kaçırmayın. Hemen randevu alın!</p>
+                </div>
+                <a href="pages/appointments.html" class="btn btn-primary btn-sm">Randevu Al</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Featured Services (Dynamic) -->
     <section class="featured-services">
         <div class="container">
             <h2>Öne Çıkan Hizmetler</h2>
             <div class="services-grid" id="servicesGrid">
-                <div class="service-card">
-                    <h3>Jel Tırnak</h3>
-                    <p>Ferah ve uzun süren jel uygulaması</p>
-                    <span class="price">₺200</span>
+                <!-- API'den dinamik yüklenecek -->
+                <p class="loading-text">Hizmetler yükleniyor...</p>
+            </div>
+            <div class="section-cta">
+                <a href="pages/services.html" class="btn btn-secondary">Tüm Hizmetleri Gör →</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Why Choose Us -->
+    <section class="why-us">
+        <div class="container">
+            <h2>Neden Bizi Tercih Etmelisiniz?</h2>
+            <div class="features-grid">
+                <div class="feature-card">
+                    <div class="feature-icon">💅</div>
+                    <h3>Uzman Ekip</h3>
+                    <p>Deneyimli ve sertifikalı uzmanlarımızla en iyi hizmeti sunuyoruz</p>
                 </div>
-                <div class="service-card">
-                    <h3>Protez Tırnak</h3>
-                    <p>Doğal görünümlü protez tırnak tasarımı</p>
-                    <span class="price">₺250</span>
+                <div class="feature-card">
+                    <div class="feature-icon">🧴</div>
+                    <h3>Kaliteli Malzeme</h3>
+                    <p>Sadece onaylı ve yüksek kaliteli ürünler kullanıyoruz</p>
                 </div>
-                <div class="service-card">
-                    <h3>Kirpik Lifting</h3>
-                    <p>Kirpiklerinizi kıvır ve hacimlendir</p>
-                    <span class="price">₺180</span>
+                <div class="feature-card">
+                    <div class="feature-icon">📅</div>
+                    <h3>Kolay Randevu</h3>
+                    <p>Online randevu sistemiyle istediğiniz zaman kolayca randevu alın</p>
                 </div>
+                <div class="feature-card">
+                    <div class="feature-icon">💰</div>
+                    <h3>Uygun Fiyatlar</h3>
+                    <p>Kaliteli hizmeti uygun fiyatlarla sunuyoruz</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Gallery Preview -->
+    <section class="gallery-preview">
+        <div class="container">
+            <h2>Son Çalışmalarımız</h2>
+            <div class="gallery-grid" id="galleryPreview">
+                <!-- API'den dinamik yüklenecek -->
+                <p class="loading-text">Galeri yükleniyor...</p>
+            </div>
+            <div class="section-cta">
+                <a href="pages/gallery.html" class="btn btn-secondary">Tüm Galeriyi Gör →</a>
             </div>
         </div>
     </section>
@@ -76,8 +133,10 @@
                     <p>Pazar: Kapalı</p>
                 </div>
                 <div class="footer-section">
-                    <h3>Adres</h3>
-                    <p>İstanbul, Türkiye</p>
+                    <h3>Hızlı Bağlantılar</h3>
+                    <p><a href="pages/services.html" style="color:#ccc;">Hizmetler</a></p>
+                    <p><a href="pages/gallery.html" style="color:#ccc;">Galeri</a></p>
+                    <p><a href="pages/appointments.html" style="color:#ccc;">Randevu Al</a></p>
                 </div>
             </div>
             <div class="footer-bottom">
@@ -87,5 +146,58 @@
     </footer>
 
     <script src="js/main.js"></script>
+    <script>
+        // Ana sayfa — hizmetleri API'den dinamik çek
+        document.addEventListener('DOMContentLoaded', async function() {
+            await loadFeaturedServices();
+            await loadGalleryPreview();
+        });
+
+        async function loadFeaturedServices() {
+            const grid = document.getElementById('servicesGrid');
+            const services = await apiCall('/services');
+            
+            if (services && services.length > 0) {
+                grid.innerHTML = '';
+                // İlk 3 hizmeti göster
+                services.slice(0, 3).forEach(service => {
+                    const card = document.createElement('div');
+                    card.className = 'service-card';
+                    card.onclick = () => { 
+                        sessionStorage.setItem('selectedServiceId', service.id);
+                        window.location.href = 'pages/appointments.html'; 
+                    };
+                    card.innerHTML = `
+                        <h3>${service.name}</h3>
+                        <p>${service.description || ''}</p>
+                        <span class="price">₺${service.price}</span>
+                        <span class="duration-badge">⏱️ ${service.durationMinutes} dk</span>
+                    `;
+                    grid.appendChild(card);
+                });
+            } else {
+                grid.innerHTML = '<p class="no-data">Hizmet bulunamadı.</p>';
+            }
+        }
+
+        async function loadGalleryPreview() {
+            const grid = document.getElementById('galleryPreview');
+            const items = await apiCall('/gallery');
+
+            if (items && items.length > 0) {
+                grid.innerHTML = '';
+                // Son 4 galeri öğesini göster
+                items.slice(0, 4).forEach(item => {
+                    const imageUrl = `${API_URL.replace('/api', '')}${item.imageUrl}`;
+                    const div = document.createElement('div');
+                    div.className = 'gallery-item';
+                    div.innerHTML = `<img src="${imageUrl}" alt="${item.description || 'Tırnak modeli'}" loading="lazy">`;
+                    grid.appendChild(div);
+                });
+            } else {
+                grid.innerHTML = '<p class="no-data">Henüz galeri öğesi bulunmamaktadır.</p>';
+            }
+        }
+    </script>
 </body>
 </html>
