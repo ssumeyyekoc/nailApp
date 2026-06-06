@@ -492,11 +492,12 @@
     <!-- Gallery Upload Modal -->
     <div class="modal-overlay" id="galleryUploadModal">
         <div class="modal">
-            <h2>Resim Yükle</h2>
+            <h2 id="galleryModalTitle">Resim Yükle</h2>
             <form id="galleryUploadForm" enctype="multipart/form-data">
+                <input type="hidden" id="editGalleryId">
                 <div class="form-group">
-                    <label for="galleryImage">Resim Seçin *</label>
-                    <input type="file" id="galleryImage" accept="image/*" required>
+                    <label for="galleryImage">Resim Seçin <span id="galleryImageRequiredStar">*</span></label>
+                    <input type="file" id="galleryImage" accept="image/*">
                 </div>
                 <div id="imagePreviewContainer" style="display:none; margin-bottom: 15px; text-align: center;">
                     <img id="imagePreview" style="max-width: 100%; max-height: 200px; border-radius: var(--border-radius); border: 1px solid #ddd;">
@@ -530,7 +531,7 @@
                 </div>
                 <div class="modal-actions">
                     <button type="button" class="btn-cancel" onclick="closeModal('galleryUploadModal')">İptal</button>
-                    <button type="submit" class="btn btn-primary">Yükle</button>
+                    <button type="submit" class="btn btn-primary" id="gallerySubmitBtn">Yükle</button>
                 </div>
             </form>
         </div>
@@ -820,7 +821,8 @@
                     div.className = 'gallery-admin-item';
                     div.innerHTML = `
                         <img src="${imageUrl}" alt="${item.description || ''}">
-                        <div class="delete-overlay">
+                        <div class="delete-overlay" style="display: flex; gap: 5px; top: 5px; right: 5px;">
+                            <button onclick="editGalleryItem(${item.id})" style="background: rgba(52, 152, 219, 0.9);">✎ Düzenle</button>
                             <button onclick="deleteGalleryItem(${item.id})">✕ Sil</button>
                         </div>
                     `;
@@ -841,9 +843,50 @@
                     categorySelect.innerHTML += `<option value="${cat.id}">${cat.name}</option>`;
                 });
             }
-        document.getElementById('galleryUploadForm').reset();
+            
+            document.getElementById('galleryUploadForm').reset();
+            document.getElementById('editGalleryId').value = '';
+            document.getElementById('galleryModalTitle').textContent = 'Resim Yükle';
+            document.getElementById('gallerySubmitBtn').textContent = 'Yükle';
+            document.getElementById('galleryImageRequiredStar').style.display = 'inline';
+            document.getElementById('galleryImage').setAttribute('required', 'required');
             document.getElementById('imagePreviewContainer').style.display = 'none';
             document.getElementById('galleryUploadModal').classList.add('active');
+        }
+
+        async function editGalleryItem(id) {
+            const categories = await apiCall('/categories');
+            const categorySelect = document.getElementById('galleryCategory');
+            categorySelect.innerHTML = '<option value="">-- Kategori Seçin --</option>';
+            if (categories && Array.isArray(categories)) {
+                categories.forEach(cat => {
+                    categorySelect.innerHTML += `<option value="${cat.id}">${cat.name}</option>`;
+                });
+            }
+
+            const item = await apiCall(`/gallery/${id}`);
+            if (item) {
+                document.getElementById('editGalleryId').value = item.id;
+                document.getElementById('galleryDescription').value = item.description || '';
+                document.getElementById('galleryCategory').value = item.categoryId;
+                
+                document.getElementById('galleryModalTitle').textContent = 'Resim Düzenle';
+                document.getElementById('gallerySubmitBtn').textContent = 'Kaydet';
+                document.getElementById('galleryImageRequiredStar').style.display = 'none';
+                document.getElementById('galleryImage').removeAttribute('required');
+
+                // Önizleme görselini yükle
+                const imageUrl = `${API_URL.replace('/api', '')}${item.imageUrl}`;
+                const previewImg = document.getElementById('imagePreview');
+                const previewContainer = document.getElementById('imagePreviewContainer');
+                const sizeInfo = document.getElementById('imageOriginalSize');
+                
+                previewImg.src = imageUrl;
+                previewContainer.style.display = 'block';
+                sizeInfo.textContent = 'Mevcut resim gösteriliyor. Değiştirmek istemiyorsanız yeni dosya seçmeyin.';
+
+                document.getElementById('galleryUploadModal').classList.add('active');
+            }
         }
 
         // Resim seçildiğinde önizleme göster ve boyut bilgilerini doldur
@@ -873,7 +916,9 @@
                 };
                 reader.readAsDataURL(file);
             } else {
-                previewContainer.style.display = 'none';
+                if (!document.getElementById('editGalleryId').value) {
+                    previewContainer.style.display = 'none';
+                }
                 widthInput.value = '';
                 heightInput.value = '';
             }
@@ -948,7 +993,14 @@
         document.getElementById('galleryUploadForm').addEventListener('submit', async function(e) {
             e.preventDefault();
 
+            const editId = document.getElementById('editGalleryId').value;
             let imageFile = document.getElementById('galleryImage').files[0];
+            
+            if (!editId && !imageFile) {
+                alert('Lütfen bir resim dosyası seçin.');
+                return;
+            }
+
             const targetWidth = parseInt(document.getElementById('galleryResizeWidth').value);
             const targetHeight = parseInt(document.getElementById('galleryResizeHeight').value);
 
@@ -962,13 +1014,18 @@
             }
 
             const formData = new FormData();
-            formData.append('image', imageFile);
+            if (imageFile) {
+                formData.append('image', imageFile);
+            }
             formData.append('description', document.getElementById('galleryDescription').value);
             formData.append('categoryId', document.getElementById('galleryCategory').value);
 
             try {
-                const response = await fetch(`${API_URL}/gallery`, {
-                    method: 'POST',
+                const url = editId ? `${API_URL}/gallery/${editId}` : `${API_URL}/gallery`;
+                const method = editId ? 'PUT' : 'POST';
+                
+                const response = await fetch(url, {
+                    method: method,
                     headers: {
                         'Authorization': `Bearer ${authToken}`
                     },
@@ -979,11 +1036,11 @@
                     closeModal('galleryUploadModal');
                     loadAdminGallery();
                 } else {
-                    alert('Resim yüklenirken bir hata oluştu.');
+                    alert('İşlem sırasında bir hata oluştu.');
                 }
             } catch (error) {
-                console.error('Upload error:', error);
-                alert('Resim yüklenirken bir hata oluştu.');
+                console.error('Error saving gallery item:', error);
+                alert('İşlem sırasında bir hata oluştu.');
             }
         });
 

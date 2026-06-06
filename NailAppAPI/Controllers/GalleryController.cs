@@ -66,6 +66,47 @@ public class GalleryController : ControllerBase
         return CreatedAtAction(nameof(GetById), new { id = gallery.Id }, gallery);
     }
 
+    [HttpPut("{id}")]
+    [Authorize(Roles = "Admin")]
+    public async Task<IActionResult> Update(int id, [FromForm] GalleryUploadRequest request)
+    {
+        var existingItem = await _galleryService.GetByIdAsync(id);
+        if (existingItem == null)
+            return NotFound("Galeri öğesi bulunamadı.");
+
+        string? newImageUrl = null;
+
+        // Eğer yeni resim gönderilmişse
+        if (request.Image != null && request.Image.Length > 0)
+        {
+            var uploadsFolder = Path.Combine(_environment.ContentRootPath, "wwwroot", "uploads", "gallery");
+            Directory.CreateDirectory(uploadsFolder);
+
+            var fileName = $"{Guid.NewGuid()}{Path.GetExtension(request.Image.FileName)}";
+            var filePath = Path.Combine(uploadsFolder, fileName);
+
+            using (var stream = new FileStream(filePath, FileMode.Create))
+            {
+                await request.Image.CopyToAsync(stream);
+            }
+
+            // Eski resmi sunucudan sil
+            var oldFilePath = Path.Combine(_environment.ContentRootPath, "wwwroot", existingItem.ImageUrl.TrimStart('/'));
+            if (System.IO.File.Exists(oldFilePath))
+            {
+                System.IO.File.Delete(oldFilePath);
+            }
+
+            newImageUrl = $"/uploads/gallery/{fileName}";
+        }
+
+        var updatedItem = await _galleryService.UpdateAsync(id, newImageUrl, request.Description, request.CategoryId);
+        if (updatedItem == null)
+            return NotFound();
+
+        return Ok(updatedItem);
+    }
+
     [HttpDelete("{id}")]
     [Authorize(Roles = "Admin")]
     public async Task<IActionResult> Delete(int id)

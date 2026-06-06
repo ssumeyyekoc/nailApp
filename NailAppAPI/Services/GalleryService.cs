@@ -52,6 +52,24 @@ public class GalleryService : IGalleryService
         return gallery;
     }
 
+    public async Task<Gallery?> UpdateAsync(int id, string? imageUrl, string? description, int categoryId)
+    {
+        var gallery = await _context.Galleries.FindAsync(id);
+        if (gallery == null)
+            return null;
+
+        if (!string.IsNullOrEmpty(imageUrl))
+        {
+            gallery.ImageUrl = imageUrl;
+        }
+        gallery.Description = description;
+        gallery.CategoryId = categoryId;
+
+        _context.Galleries.Update(gallery);
+        await _context.SaveChangesAsync();
+        return gallery;
+    }
+
     public async Task<bool> DeleteAsync(int id)
     {
         var gallery = await _context.Galleries.FindAsync(id);
