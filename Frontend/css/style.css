@@ -435,7 +435,8 @@ h1, h2, h3, h4, h5, h6, .logo h1, .hero-content h2 {
     overflow: hidden;
     border-radius: var(--border-radius);
     cursor: pointer;
-    height: 250px;
+    width: 100%;
+    aspect-ratio: 1 / 1;
 }
 
 .gallery-item img,

@@ -226,7 +226,8 @@
             position: relative;
             border-radius: var(--border-radius);
             overflow: hidden;
-            height: 200px;
+            width: 100%;
+            aspect-ratio: 1 / 1;
         }
 
         .gallery-admin-item img {
@@ -899,7 +900,7 @@
             }
         });
 
-        // Canvas ile resmi yeniden boyutlandırma
+        // Canvas ile resmi yeniden boyutlandırma (Akıllı Merkezden Kırpma / Crop to Fit)
         function resizeImageFile(file, targetWidth, targetHeight) {
             return new Promise((resolve) => {
                 const reader = new FileReader();
@@ -910,7 +911,29 @@
                         canvas.width = targetWidth;
                         canvas.height = targetHeight;
                         const ctx = canvas.getContext('2d');
-                        ctx.drawImage(img, 0, 0, targetWidth, targetHeight);
+                        
+                        // Orijinal ve hedef en-boy oranlarını hesapla
+                        const originalRatio = img.width / img.height;
+                        const targetRatio = targetWidth / targetHeight;
+                        
+                        let srcX = 0;
+                        let srcY = 0;
+                        let srcWidth = img.width;
+                        let srcHeight = img.height;
+                        
+                        if (originalRatio > targetRatio) {
+                            // Orijinal resim daha geniş: Yanlardan kes (Sol/Sağ)
+                            srcWidth = img.height * targetRatio;
+                            srcX = (img.width - srcWidth) / 2;
+                        } else if (originalRatio < targetRatio) {
+                            // Orijinal resim daha uzun: Üst ve alttan kes
+                            srcHeight = img.width / targetRatio;
+                            srcY = (img.height - srcHeight) / 2;
+                        }
+                        
+                        // Merkezden kırparak çiz
+                        ctx.drawImage(img, srcX, srcY, srcWidth, srcHeight, 0, 0, targetWidth, targetHeight);
+                        
                         canvas.toBlob(function(blob) {
                             const resizedFile = new File([blob], file.name, { type: file.type || 'image/jpeg' });
                             resolve(resizedFile);
