@@ -682,6 +682,44 @@
         </div>
     </div>
 
+    <!-- Announcement Modal -->
+    <div class="modal-overlay" id="announcementModal">
+        <div class="modal">
+            <h2 id="announcementModalTitle">Yeni Kampanya Ekle</h2>
+            <form id="announcementForm">
+                <input type="hidden" id="editAnnouncementId">
+                <div class="form-group">
+                    <label for="announcementTitle">Kampanya Başlığı *</label>
+                    <input type="text" id="announcementTitle" required maxlength="100">
+                </div>
+                <div class="form-group">
+                    <label for="announcementContent">İçerik/Açıklama *</label>
+                    <textarea id="announcementContent" rows="3" required></textarea>
+                </div>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                    <div class="form-group">
+                        <label for="announcementEmoji">Emoji (Örn: 📢, 🎁, 💅)</label>
+                        <input type="text" id="announcementEmoji" placeholder="📢">
+                    </div>
+                    <div class="form-group">
+                        <label for="announcementBadge">Rozet Metni (Örn: Yeni, Fırsat)</label>
+                        <input type="text" id="announcementBadge" placeholder="Örn: %20 İndirim">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
+                        <input type="checkbox" id="announcementActive" checked style="width: auto;">
+                        Aktif Kampanya
+                    </label>
+                </div>
+                <div class="modal-actions">
+                    <button type="button" class="btn-cancel" onclick="closeModal('announcementModal')">İptal</button>
+                    <button type="submit" class="btn btn-primary">Kaydet</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
     <!-- Footer -->
     <footer class="footer">
         <div class="container">
